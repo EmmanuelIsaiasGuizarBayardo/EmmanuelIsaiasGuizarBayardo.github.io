@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emmanuel Isaías Guízar Bayardo: Neuroengineer</title>
+<meta name="description" content="Neuroengineer building brain-computer interfaces and neural signal-processing pipelines. Work centered on honest model validation: EEG, electrophysiology decoding, and sEMG.">
+<meta name="author" content="Emmanuel Isaías Guízar Bayardo">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Emmanuel Isaías Guízar Bayardo: Neuroengineer">
+<meta property="og:description" content="Brain-computer interfaces and neural signal-processing pipelines. Work centered on honest model validation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F3F0;      /* pale cool datasheet ground, not warm cream */
+  --panel:#F8FAF7;      /* faint lift for figures */
+  --ink:#15181A;        /* near-black, slightly cool */
+  --muted:#5A6066;      /* secondary text, mono metadata */
+  --faint:#8A9098;      /* tertiary */
+  --hair:#CDD2CC;       /* hairlines, ticks */
+  --hair-2:#DEE2DC;
+  --signal:#B67410;     /* amber-gold: reserved strictly for signal + data */
+  --signal-soft:rgba(182,116,16,.14);
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --measure:66ch;
+  --col-label:168px;
+  --gap:2.6rem;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:400;font-size:17px;line-height:1.62;
+  letter-spacing:.002em;-webkit-font-smoothing:antialiased;
+  padding:0;
+}
+.wrap{max-width:1040px;margin:0 auto;padding:0 clamp(1.25rem,5vw,3rem)}
+a{color:inherit;text-decoration:none}
+p{margin:0 0 1rem;max-width:var(--measure)}
+::selection{background:var(--signal-soft)}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.72rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+.mono{font-family:var(--mono)}
+
+/* ---- Masthead ---------------------------------------------------------- */
+.mast{padding:clamp(3rem,9vw,6rem) 0 2.2rem}
+.mast-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:2.4rem}
+.kicker{display:flex;align-items:center;gap:.7rem;color:var(--muted)}
+.kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 3px var(--signal-soft);flex:none}
+.lang{display:flex;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;border:1px solid var(--hair);background:transparent}
+.lang button{
+  font:inherit;color:var(--faint);background:none;border:none;cursor:pointer;
+  padding:.34rem .6rem;letter-spacing:.1em;transition:color .2s,background .2s;
+}
+.lang button[aria-pressed="true"]{color:var(--ink);background:var(--panel)}
+.lang button:not([aria-pressed="true"]):hover{color:var(--muted)}
+
+.name{
+  font-weight:600;line-height:1.02;letter-spacing:-.02em;margin:0 0 .5rem;
+  font-size:clamp(2.35rem,6.4vw,3.75rem);
+}
+.role{font-size:clamp(1.02rem,2.4vw,1.18rem);color:var(--muted);font-weight:400;max-width:52ch;margin:0}
+
+/* signal trace: the signature element */
+.trace{margin:1.9rem 0 .2rem;width:100%;height:76px;display:block;overflow:visible}
+.trace path{fill:none;stroke:var(--signal);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round;opacity:.92;vector-effect:non-scaling-stroke}
+.trace .base{stroke:var(--hair);stroke-width:1;opacity:1}
+.trace-cap{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;color:var(--faint);margin-top:.35rem}
+
+.contact{display:flex;flex-wrap:wrap;gap:0 1.6rem;margin-top:1.7rem;font-family:var(--mono);font-size:.82rem}
+.contact a{color:var(--muted);padding:.15rem 0;border-bottom:1px solid transparent;transition:color .18s,border-color .18s}
+.contact a:hover{color:var(--ink);border-bottom-color:var(--signal)}
+
+/* ---- Sections ---------------------------------------------------------- */
+.sec{
+  display:grid;grid-template-columns:var(--col-label) 1fr;gap:var(--gap);
+  padding:2.9rem 0;border-top:1px solid var(--hair-2);
+  opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;
+}
+.sec.in{opacity:1;transform:none}
+.sec-label{position:relative}
+.sec-label .eyebrow{position:sticky;top:1.4rem}
+.sec-body{min-width:0}
+.lede{font-size:clamp(1.12rem,2.6vw,1.34rem);line-height:1.5;font-weight:400;letter-spacing:-.008em;max-width:38ch}
+.lede.small{font-size:1.02rem;line-height:1.6;max-width:var(--measure);color:var(--muted);margin-top:1.1rem}
+.lede b{font-weight:600;color:var(--ink)}
+
+/* entries: digital dialect of the CV two-line entry */
+.entry{margin:0 0 1.5rem}
+.entry:last-child{margin-bottom:0}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:1.2rem}
+.org{font-weight:600}
+.role-l{font-style:italic;color:var(--ink)}
+.meta{font-family:var(--mono);font-size:.76rem;color:var(--muted);white-space:nowrap;letter-spacing:.02em}
+@media(max-width:520px){.meta{white-space:normal;text-align:right}}
+
+.work{margin:0 0 2.5rem;padding:0}
+.work:last-child{margin-bottom:0}
+.work .desc{margin-top:.85rem}
+.marks{display:flex;flex-wrap:wrap;gap:.55rem .9rem;margin:.4rem 0 .55rem;padding:0;list-style:none}
+.marks li{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.01em}
+.marks .v{color:var(--ink);font-weight:500}
+.marks .v.sig{color:var(--signal)}
+.tags{font-family:var(--mono);font-size:.72rem;color:var(--faint);letter-spacing:.04em;margin-top:.3rem}
+
+.compact .entry{margin-bottom:1.1rem}
+.compact .desc{color:var(--muted);font-size:.94rem;margin-top:.25rem;max-width:var(--measure)}
+
+/* skills */
+.skills{margin:0;padding:0;list-style:none}
+.skills li{padding:.7rem 0;border-bottom:1px solid var(--hair-2);display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem}
+.skills li:last-child{border-bottom:none}
+.skills .cat{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:.12rem}
+.skills .val{color:var(--ink)}
+@media(max-width:560px){.skills li{grid-template-columns:1fr;gap:.15rem}}
+
+.rec{margin:0;padding:0;list-style:none}
+.rec li{padding:.55rem 0;border-bottom:1px solid var(--hair-2);display:flex;gap:1rem;align-items:baseline}
+.rec li:last-child{border-bottom:none}
+.rec .yr{font-family:var(--mono);font-size:.74rem;color:var(--faint);flex:none;width:5.5rem}
+
+/* AUROC figure ----------------------------------------------------------- */
+.fig{margin:1.4rem 0 .4rem;background:var(--panel);border:1px solid var(--hair-2);padding:1.3rem 1.4rem 1.1rem}
+.fig-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem}
+.fig svg{width:100%;height:auto;display:block}
+.fig .bar{transform:scaleX(0);transform-box:fill-box;transform-origin:left center;transition:transform 1.05s cubic-bezier(.22,.61,.36,1)}
+.fig.drawn .bar{transform:scaleX(1)}
+.fig .bar.d2{transition-delay:.18s}
+.fig text{font-family:var(--mono)}
+.fig-cap{font-size:.86rem;color:var(--muted);margin:.9rem 0 0;max-width:56ch}
+.fig-cap b{color:var(--ink);font-weight:600}
+
+/* footer / colophon */
+.colo{border-top:1px solid var(--hair-2);padding:2.6rem 0 3.4rem;margin-top:1rem;
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.2rem;
+  font-family:var(--mono);font-size:.76rem;color:var(--faint);letter-spacing:.02em}
+.colo a{color:var(--muted);border-bottom:1px solid transparent}
+.colo a:hover{color:var(--ink);border-bottom-color:var(--signal)}
+.colo .note{max-width:42ch;line-height:1.55}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+
+@media(max-width:760px){
+  .sec{grid-template-columns:1fr;gap:1rem;padding:2.3rem 0}
+  .sec-label .eyebrow{position:static}
+}
+@media(prefers-reduced-motion:reduce){
+  .sec{transition:none;opacity:1;transform:none}
+  .fig .bar{transition:none;transform:scaleX(1)}
+  .trace path{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-top">
+      <div class="kicker eyebrow"><span class="dot" aria-hidden="true"></span><span data-k="kicker"></span></div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="es" aria-pressed="false">ES</button>
+      </div>
+    </div>
+    <h1 class="name">Emmanuel Isaías Guízar Bayardo</h1>
+    <p class="role" data-k="role"></p>
+
+    <svg class="trace" viewBox="0 0 1000 76" preserveAspectRatio="none" aria-hidden="true">
+      <line class="base" x1="0" y1="38" x2="1000" y2="38"></line>
+      <path id="eeg" d=""></path>
+    </svg>
+    <div class="trace-cap"><span data-k="traceL"></span><span data-k="traceR"></span></div>
+
+    <nav class="contact" aria-label="Contact">
+      <a href="mailto:eisaiasgb03@gmail.com">eisaiasgb03@gmail.com</a>
+      <a href="https://github.com/EmmanuelIsaiasGuizarBayardo" rel="me noopener">github</a>
+      <a href="https://linkedin.com/in/isaias-guizar" rel="me noopener">linkedin</a>
+      <a href="./cv/CV_Emmanuel_Guizar_Bayardo_EN.docx" data-k="cvlink"></a>
+    </nav>
+  </header>
+
+  <main id="doc"></main>
+
+  <footer class="colo">
+    <div class="note" data-k="colonote"></div>
+    <div>
+      <a href="mailto:eisaiasgb03@gmail.com">eisaiasgb03@gmail.com</a> ·
+      <a href="https://github.com/EmmanuelIsaiasGuizarBayardo" rel="me noopener">github</a> ·
+      <a href="https://linkedin.com/in/isaias-guizar" rel="me noopener">linkedin</a>
+    </div>
+  </footer>
+</div>
+
+<noscript>
+  <div style="max-width:680px;margin:0 auto;padding:2rem;font-family:sans-serif">
+    Emmanuel Isaías Guízar Bayardo: Neuroengineer. Brain-computer interfaces and neural
+    signal-processing pipelines. Contact: eisaiasgb03@gmail.com ·
+    github.com/EmmanuelIsaiasGuizarBayardo · linkedin.com/in/isaias-guizar
+  </div>
+</noscript>
+
+<script>
+/* =========================================================================
+   Single source of truth. Update this object to update the whole site;
+   EN/ES stay in lockstep. Mirrors the component vocabulary of helpers.js
+   (entries, marks, sections) so it ports cleanly to a Vite/React build.
+   ========================================================================= */
+const C = {
+  en:{
+    kicker:"Neuroengineering · BCI · Neural signal processing",
+    role:"Neuroscience and computer engineering. I build brain-computer interfaces and the signal-processing pipelines behind them.",
+    traceL:"EEG · O1–O2 montage", traceR:"acquired signal",
+    cvlink:"cv (docx)",
+    thesisTitle:"Statement",
+    thesis:"I build brain-computer interfaces and neural signal-processing pipelines. My work is organized around a discipline that is easy to state and hard to keep: <b>validate models the honest way, even when the honest number is the worse one.</b>",
+    thesis2:"In one EEG study for Parkinson's detection, conventional segment-wise validation reported an AUROC near 0.99. Under subject-wise validation, the same pipeline settled around 0.66. The gap was information leakage, not skill; the honest number is the one worth reporting.",
+    eduTitle:"Education",
+    edu:[
+      {org:"UNAM, School of Medicine",loc:"Mexico City",role:"B.S. Neuroscience · GPA 9.30 / 10.0",dates:"Aug 2023 – Jun 2027 (expected)"},
+      {org:"UVEG, Virtual University of Guanajuato",loc:"Online",role:"B.S. Computer Systems Engineering · GPA 9.80 / 10.0",dates:"Jul 2025 – Jul 2028 (expected)"}
+    ],
+    workTitle:"Selected work",
+    work:[
+      {org:"Parkinson's Disease Detection from EEG",loc:"Thesis, UNAM",role:"Subject-wise validation and transfer to Emotiv EPOC",dates:"Jun 2025 – Present",
+       desc:"Replicated the Aljalal et al. (2022) framework on the SanDiego dataset (n = 31) with subject-wise validation (GroupKFold) and 1,536 features per epoch from Wavelet Packet Decomposition. Contrasting segment-wise against subject-wise splits exposed the information leakage that inflates most published results; the pipeline retained 94–99% of performance on the 14 channels of the Emotiv EPOC, and the findings were presented as a poster at the 10th Neuroengineering Summer School (Camogli, Italy, 2026).",
+       marks:[["AUROC, segment-wise","0.99–1.00",false],["AUROC, subject-wise","0.63–0.72",true],["subjects","31",false],["features / epoch","1,536",false],["channels retained","14",false]],
+       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python",
+       figure:true},
+      {org:"Neural Population Dynamics and Decoding of NHP Electrophysiology",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Computational models on laboratory-provided primate recordings",dates:"Aug 2025 – Jun 2026",
+       desc:"Analyzed in-vivo primate electrophysiology in Python: 73 single-unit neurons and LFP across S1, S2, and premotor / prefrontal cortex (MPC, DPC). Combined single-neuron coding (mutual information, ROC/AUROC, choice probability) with population methods (PCA, demixed-PCA, targeted dimensionality reduction, neural manifolds) to decode stimulus, category, decision, and movement, alongside LFP connectivity (Granger, spike-field).",
+       marks:[["single-unit neurons","73",false],["cortical areas","S1 · S2 · MPC · DPC",false],["decoded","stimulus · category · decision · movement",false]],
+       tags:"NHP electrophysiology · demixed-PCA · neural manifolds · population decoding · LFP connectivity"},
+      {org:"WristQuest: Serious Game for Neurorehabilitation",loc:"LANR-IFC, UNAM",role:"Lead researcher · real-time sEMG for pediatric USCP",dates:"Feb 2026 – May 2026",
+       desc:"Designed, as lead researcher, a serious game driven by real-time sEMG (4 channels; 20–450 Hz band-pass, 60 Hz notch, RMS envelope, MVC normalization). Sized the pilot clinical trial (n = 52, Cohen's d = 0.8, 40 sessions), authored the 58-page protocol with 7 clinical annexes, and built a five-panel Python dashboard. Advisor: M.Sc. Yoás S. Ramírez Graullera.",
+       marks:[["sEMG channels","4",false],["band-pass","20–450 Hz",false],["pilot n","52",false],["effect size","d = 0.8",false],["protocol","58 pp.",false]],
+       tags:"sEMG · real-time DSP · RMS envelope · clinical protocol · Python"}
+    ],
+    moreTitle:"Also",
+    more:[
+      {org:"ConnMorph: Morphometry and Functional Connectivity",loc:"Academic project, UNAM",role:"Structural VBM and resting-state networks with FSL and Nipype",dates:"Mar 2026 – Jun 2026",
+       desc:"VBM pipeline over 12 T1 images (BET, FAST, FLIRT, FNIRT to MNI152, Jacobian modulation, FWHM ≈ 8 mm; 18 ROIs) plus group-ICA resting-state networks for 7 subjects (MELODIC, 30 components), recovering 4 canonical networks via the Yeo atlas; reproducible end to end."},
+      {org:"NeuroDAC: Academic Demonstrator of Neuroengineering",loc:"DUNNE, UNAM",role:"Modular EEG and BCI interface · Python",dates:"May 2025 – Mar 2026",
+       desc:"Led a modular platform acquiring single-channel EEG (NeuroSky MindWave Mobile 2) with real-time visualization (Dash / Plotly) and two neurofeedback modules; presented to 600+ attendees across six academic and industry forums."}
+    ],
+    expTitle:"Experience",
+    exp:[
+      {org:"10th Neuroengineering Summer School",loc:"University of Genoa (DIBRIS), Italy",role:"Selected participant · one of 30 international researchers",dates:"Jun 2026",
+       desc:"Hands-on protocols with polymer scaffolds for 2D/3D in-vitro neural networks, multi-electrode array (MEA) recordings, and advanced-microscopy image processing."},
+      {org:"ORBIT: Tech-Based Venture Acceleration",loc:"MIT and Tec de Monterrey",role:"Graduate · one of 19 projects · \u201CNeuro Wear\u201D (ideation)",dates:"Mar 2026 – Jun 2026",desc:""},
+      {org:"Sinapsis Winter 2026",loc:"ITESM, Mexico City",role:"Teaching assistant · EMG, biomedical PCBs, 3D printing",dates:"Dec 2025 – Jan 2026",desc:""},
+      {org:"IV Neurosymposium",loc:"ENES Juriquilla, UNAM",role:"Main author and workshop instructor · brain-disorder diagnosis via EEG and ML",dates:"Jul 2025 – Nov 2025",desc:""},
+      {org:"Calcium-Imaging Laboratory (Bargas Lab)",loc:"IFC, UNAM",role:"Ex-vivo techniques · Parkinson's mouse model",dates:"Aug 2024 – May 2025",desc:""}
+    ],
+    leadTitle:"Leadership",
+    lead:[
+      {org:"University Division of Neuroengineering (DUNNE), UNAM",loc:"President",role:"",dates:"Feb 2026 – Present",
+       desc:"Lead multidisciplinary BCI and AI-diagnostics teams; grew the community from 60+ to 100+ members while running a full-capacity curriculum and coordinating collaborations across 3 schools, 3 institutes, and companies (Odoo, UNIT Electronics)."},
+      {org:"University Division of Neuroengineering (DUNNE), UNAM",loc:"Head of Computational Development",role:"",dates:"Nov 2024 – Jan 2026",
+       desc:"Led NeuroDAC's technical development; built ML and EEG pipelines in Python (wavelets, entropy), two BCI-connected games, and automated recruitment in Odoo that still sustains ~60% of intake."}
+    ],
+    skillTitle:"Methods and tools",
+    skills:[
+      ["Languages","Python (advanced), C, MATLAB, LaTeX"],
+      ["Signal / ML / decoding","NumPy, SciPy, pandas, scikit-learn, MNE-Python, PyWavelets, PyTorch, TensorFlow, Keras · FSL (MELODIC), Nipype, Yeo atlas · PCA / demixed-PCA, neural manifolds, population decoding, connectivity (Granger, spike-field)"],
+      ["Hardware / tools","Arduino, ESP32 / ESP32-S3, commercial EEG headsets (NeuroSky), sEMG, biomedical PCBs, 3D printing, OpenCV, Git / GitHub"],
+      ["Spoken","Spanish (native), English (C1, Cambridge CAE), German (B2/C1, DSD II), Japanese (basic)"]
+    ],
+    recTitle:"Recognition",
+    rec:[
+      ["2026","Full Board & Training Grant, University of Genoa / DIBRIS (Camogli)"],
+      ["2026","50 Young Leaders in Digital Health in Mexico, Transform Health"],
+      ["2025","2nd of 30 teams, MeIA (voice control, ~91%); also MeIA 2023 (DNA classification, ~93%)"],
+      ["2026","BCI & Neurotechnology Spring School, g.tec · 130 h · 100/100 · BR41N.IO"],
+      ["2025","Honorable Mention, COVID-19 Hackathon · winning poster, Neuroverbena 2024"]
+    ],
+    colonote:"Typeset in IBM Plex. Built by hand as one HTML file, no template. Content is data-driven and bilingual. Last updated June 2026."
+  },
+  es:{
+    kicker:"Neuroingeniería · BCI · Procesamiento de señales neuronales",
+    role:"Neurociencia e ingeniería en cómputo. Construyo interfaces cerebro-computadora y los pipelines de procesamiento de señales que las sostienen.",
+    traceL:"EEG · montaje O1–O2", traceR:"señal adquirida",
+    cvlink:"cv (docx)",
+    thesisTitle:"Declaración",
+    thesis:"Construyo interfaces cerebro-computadora y pipelines de procesamiento de señales neuronales. Mi trabajo gira en torno a una disciplina fácil de enunciar y difícil de sostener: <b>validar los modelos de forma honesta, incluso cuando el número honesto es el peor.</b>",
+    thesis2:"En un estudio de EEG para detección de Parkinson, la validación convencional segment-wise reportó un AUROC cercano a 0.99. Con validación subject-wise, el mismo pipeline se estabilizó alrededor de 0.66. La diferencia era fuga de información, no habilidad; el número honesto es el que vale la pena reportar.",
+    eduTitle:"Educación",
+    edu:[
+      {org:"UNAM, Facultad de Medicina",loc:"CDMX, México",role:"Licenciatura en Neurociencias · Promedio 9.30 / 10.0",dates:"ago 2023 – jun 2027 (esperado)"},
+      {org:"UVEG, Universidad Virtual del Estado de Guanajuato",loc:"En línea",role:"Ingeniería en Sistemas Computacionales · Promedio 9.80 / 10.0",dates:"jul 2025 – jul 2028 (esperado)"}
+    ],
+    workTitle:"Trabajo seleccionado",
+    work:[
+      {org:"Detección de Parkinson a partir de EEG",loc:"Tesis, UNAM",role:"Validación subject-wise y transferencia a Emotiv EPOC",dates:"jun 2025 – Presente",
+       desc:"Repliqué el marco de Aljalal et al. (2022) sobre el conjunto SanDiego (n = 31) con validación subject-wise (GroupKFold) y 1,536 características por época vía Wavelet Packet Decomposition. Contrastar las particiones segment-wise contra subject-wise evidenció la fuga de información que infla la mayoría de los resultados publicados; el pipeline retuvo 94–99% del rendimiento en los 14 canales del Emotiv EPOC, y los hallazgos se presentaron como cartel en la 10th Neuroengineering Summer School (Camogli, Italia, 2026).",
+       marks:[["AUROC, segment-wise","0.99–1.00",false],["AUROC, subject-wise","0.63–0.72",true],["sujetos","31",false],["características / época","1,536",false],["canales retenidos","14",false]],
+       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python",
+       figure:true},
+      {org:"Dinámica poblacional y decodificación de electrofisiología NHP",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Modelos computacionales sobre registros de primate provistos por el laboratorio",dates:"ago 2025 – jun 2026",
+       desc:"Analicé en Python electrofisiología in vivo de primate: 73 neuronas single-unit y LFP en cortezas S1, S2 y premotora / prefrontal (MPC, DPC). Combiné codificación de neurona única (información mutua, ROC/AUROC, choice probability) con métodos poblacionales (PCA, demixed-PCA, targeted dimensionality reduction, neural manifolds) para decodificar estímulo, categoría, decisión y movimiento, junto con conectividad de LFP (Granger, spike-field).",
+       marks:[["neuronas single-unit","73",false],["áreas corticales","S1 · S2 · MPC · DPC",false],["decodificado","estímulo · categoría · decisión · movimiento",false]],
+       tags:"electrofisiología NHP · demixed-PCA · neural manifolds · decodificación poblacional · conectividad LFP"},
+      {org:"WristQuest: Serious game de neurorrehabilitación",loc:"LANR-IFC, UNAM",role:"Investigador principal · sEMG en tiempo real para PCEU pediátrica",dates:"feb 2026 – may 2026",
+       desc:"Diseñé, como investigador principal, un serious game controlado por sEMG en tiempo real (4 canales; pasa-banda 20–450 Hz, notch 60 Hz, envolvente RMS, normalización por MVC). Calculé el ensayo clínico piloto (n = 52, Cohen's d = 0.8, 40 sesiones), redacté el protocolo de 58 páginas con 7 anexos clínicos y construí un dashboard de cinco paneles en Python. Asesor: Mtro. Yoás S. Ramírez Graullera.",
+       marks:[["canales sEMG","4",false],["pasa-banda","20–450 Hz",false],["n piloto","52",false],["tamaño de efecto","d = 0.8",false],["protocolo","58 pp.",false]],
+       tags:"sEMG · DSP en tiempo real · envolvente RMS · protocolo clínico · Python"}
+    ],
+    moreTitle:"Además",
+    more:[
+      {org:"ConnMorph: Morfometría y conectividad funcional",loc:"Proyecto académico, UNAM",role:"VBM estructural y redes en reposo con FSL y Nipype",dates:"mar 2026 – jun 2026",
+       desc:"Pipeline VBM sobre 12 imágenes T1 (BET, FAST, FLIRT, FNIRT a MNI152, modulación jacobiana, FWHM ≈ 8 mm; 18 ROIs) más redes funcionales en reposo de 7 sujetos por ICA grupal (MELODIC, 30 componentes), recuperando 4 redes canónicas vía atlas de Yeo; reproducible de extremo a extremo."},
+      {org:"NeuroDAC: Demostrador Académico de Neuroingeniería",loc:"DUNNE, UNAM",role:"Interfaz modular de EEG y BCI · Python",dates:"may 2025 – mar 2026",
+       desc:"Dirigí una plataforma modular que adquiere EEG de un canal (NeuroSky MindWave Mobile 2) con visualización en tiempo real (Dash / Plotly) y dos módulos de neurofeedback; presentada ante más de 600 asistentes en seis foros académicos e industriales."}
+    ],
+    expTitle:"Experiencia",
+    exp:[
+      {org:"10th Neuroengineering Summer School",loc:"Universidad de Génova (DIBRIS), Italia",role:"Participante seleccionado · uno de 30 investigadores internacionales",dates:"jun 2026",
+       desc:"Protocolos prácticos con scaffolds poliméricos para redes neuronales in vitro 2D/3D, registros con multi-electrode arrays (MEA) y procesamiento de imágenes de microscopía avanzada."},
+      {org:"ORBIT: Aceleración de proyectos tecnológicos",loc:"MIT y Tec de Monterrey",role:"Graduado · uno de 19 proyectos · \u201CNeuro Wear\u201D (ideación)",dates:"mar 2026 – jun 2026",desc:""},
+      {org:"Sinapsis Invierno 2026",loc:"ITESM, CDMX",role:"Asistente de enseñanza · EMG, PCBs biomédicas, impresión 3D",dates:"dic 2025 – ene 2026",desc:""},
+      {org:"IV Neurosimposio",loc:"ENES Juriquilla, UNAM",role:"Autor principal y tallerista · diagnóstico de trastornos cerebrales por EEG y ML",dates:"jul 2025 – nov 2025",desc:""},
+      {org:"Laboratorio de Imagenología de Calcio (Lab. Bargas)",loc:"IFC, UNAM",role:"Técnicas ex vivo · modelo murino de Parkinson",dates:"ago 2024 – may 2025",desc:""}
+    ],
+    leadTitle:"Liderazgo",
+    lead:[
+      {org:"División Universitaria de Neuroingeniería (DUNNE), UNAM",loc:"Presidente",role:"",dates:"feb 2026 – Presente",
+       desc:"Dirijo equipos multidisciplinarios de BCI y diagnóstico asistido por IA; hice crecer la comunidad de 60+ a 100+ miembros gestionando un currículo con cupos saturados y coordinando colaboraciones con 3 facultades, 3 institutos y empresas (Odoo, UNIT Electronics)."},
+      {org:"División Universitaria de Neuroingeniería (DUNNE), UNAM",loc:"Jefe de Desarrollo Computacional",role:"",dates:"nov 2024 – ene 2026",
+       desc:"Lideré el desarrollo técnico de NeuroDAC; construí pipelines de ML y EEG en Python (wavelets, entropía), dos videojuegos con BCI y automaticé el reclutamiento en Odoo, sistema que aún sostiene ~60% del ingreso."}
+    ],
+    skillTitle:"Métodos y herramientas",
+    skills:[
+      ["Lenguajes","Python (avanzado), C, MATLAB, LaTeX"],
+      ["Señales / ML / decoding","NumPy, SciPy, pandas, scikit-learn, MNE-Python, PyWavelets, PyTorch, TensorFlow, Keras · FSL (MELODIC), Nipype, atlas Yeo · PCA / demixed-PCA, neural manifolds, decodificación poblacional, conectividad (Granger, spike-field)"],
+      ["Hardware / herramientas","Arduino, ESP32 / ESP32-S3, diademas EEG comerciales (NeuroSky), sEMG, PCBs biomédicas, impresión 3D, OpenCV, Git / GitHub"],
+      ["Idiomas","español (nativo), inglés (C1, Cambridge CAE), alemán (B2/C1, DSD II), japonés (básico)"]
+    ],
+    recTitle:"Reconocimientos",
+    rec:[
+      ["2026","Full Board & Training Grant, Universidad de Génova / DIBRIS (Camogli)"],
+      ["2026","50 Jóvenes Líderes en Salud Digital en México, Transform Health"],
+      ["2025","2.º de 30 equipos, MeIA (control por voz, ~91%); también MeIA 2023 (clasificación de ADN, ~93%)"],
+      ["2026","BCI & Neurotechnology Spring School, g.tec · 130 h · 100/100 · BR41N.IO"],
+      ["2025","Mención Honorífica, Hackathon COVID · cartel ganador, Neuroverbena 2024"]
+    ],
+    colonote:"Compuesto en IBM Plex. Hecho a mano como un solo archivo HTML, sin plantilla. El contenido es data-driven y bilingüe. Última actualización: junio 2026."
+  }
+};
+
+/* ---- render helpers (echo of helpers.js component vocabulary) ---------- */
+const el = (t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n;};
+function entryRows(d){
+  let out=`<div class="row"><span class="org">${d.org}</span><span class="meta">${d.loc||""}</span></div>`;
+  const l2=[d.role?`<span class="role-l">${d.role}</span>`:"",d.dates?`<span class="meta">${d.dates}</span>`:""].filter(Boolean);
+  if(l2.length) out+=`<div class="row">${l2.join("")}</div>`;
+  return out;
+}
+function marksHTML(marks){
+  return `<ul class="marks">`+marks.map(m=>`<li>${m[0]} <span class="v${m[2]?" sig":""}">${m[1]}</span></li>`).join("")+`</ul>`;
+}
+function section(labelKey,label,bodyNodes){
+  const s=el("section","sec");
+  s.appendChild(el("div","sec-label",`<span class="eyebrow">${label}</span>`));
+  const b=el("div","sec-body");
+  bodyNodes.forEach(n=> b.appendChild(typeof n==="string"?el("div",null,n):n));
+  s.appendChild(b);
+  return s;
+}
+
+/* ---- AUROC figure ------------------------------------------------------ */
+function aurocFigure(t){
+  const W=640,H=196,padL=132,padR=28,top=34,rowH=52;
+  const x=v=>padL+((v-0.5)/0.5)*(W-padL-padR);
+  const ticks=[0.5,0.6,0.7,0.8,0.9,1.0];
+  const leakY=top, honY=top+rowH+18;
+  const seg=[0.99,1.0], sub=[0.63,0.72];
+  const barH=13;
+  let tickMarks=ticks.map(v=>`<line x1="${x(v).toFixed(1)}" y1="${honY+barH+16}" x2="${x(v).toFixed(1)}" y2="${honY+barH+22}" stroke="var(--hair)"/><text x="${x(v).toFixed(1)}" y="${honY+barH+36}" fill="var(--faint)" font-size="10" text-anchor="middle">${v.toFixed(2)}</text>`).join("");
+  const chance=`<line x1="${x(0.5).toFixed(1)}" y1="${top-8}" x2="${x(0.5).toFixed(1)}" y2="${honY+barH+16}" stroke="var(--hair)" stroke-dasharray="2 3"/><text x="${x(0.5).toFixed(1)}" y="${top-14}" fill="var(--faint)" font-size="9.5" text-anchor="middle">chance</text>`;
+  const bar=(y,r,cls,color)=>`<rect class="bar ${cls}" x="${x(r[0]).toFixed(1)}" y="${y}" width="${(x(r[1])-x(r[0])).toFixed(1)}" height="${barH}" fill="${color}"/>`;
+  const lbl=(y,txt)=>`<text x="${padL-12}" y="${y+barH-2}" fill="var(--muted)" font-size="10.5" text-anchor="end">${txt}</text>`;
+  const val=(y,r,color)=>`<text x="${(x(r[1])+8).toFixed(1)}" y="${y+barH-2}" fill="${color}" font-size="10.5" font-weight="500">${r[0].toFixed(2)}–${r[1].toFixed(2)}</text>`;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t.figAria}">
+    ${chance}
+    ${bar(leakY,seg,"d1","var(--muted)")}${lbl(leakY,t.figSeg)}${val(leakY,seg,"var(--muted)")}
+    ${bar(honY,sub,"d2","var(--signal)")}${lbl(honY,t.figSub)}${val(honY,sub,"var(--signal)")}
+    ${tickMarks}
+  </svg>`;
+  const fig=el("figure","fig");
+  fig.innerHTML=`<div class="fig-head">${t.figHead}</div>${svg}<figcaption class="fig-cap">${t.figCap}</figcaption>`;
+  return fig;
+}
+
+/* ---- build the document ------------------------------------------------ */
+function render(lang){
+  const t=C[lang];
+  // figure strings live alongside content
+  t.figHead = lang==="es" ? "AUROC · Parkinson vs. control" : "AUROC · Parkinson vs. control";
+  t.figSeg  = "segment-wise";
+  t.figSub  = "subject-wise";
+  t.figAria = lang==="es"
+    ? "AUROC segment-wise 0.99 a 1.00 frente a subject-wise 0.63 a 0.72"
+    : "AUROC segment-wise 0.99 to 1.00 versus subject-wise 0.63 to 0.72";
+  t.figCap  = lang==="es"
+    ? "La partición <b>segment-wise</b> deja épocas del mismo sujeto en train y test; el AUROC casi perfecto es fuga, no generalización. La partición <b>subject-wise</b> mide lo que de verdad transfiere a un sujeto nuevo."
+    : "A <b>segment-wise</b> split leaves epochs from the same subject in train and test; the near-perfect AUROC is leakage, not generalization. The <b>subject-wise</b> split measures what actually transfers to an unseen subject.";
+
+  // header-bound keys
+  document.querySelectorAll("[data-k]").forEach(n=>{
+    const v=t[n.getAttribute("data-k")];
+    if(v!=null) n.innerHTML=v;
+  });
+  document.documentElement.lang=lang;
+
+  const doc=document.getElementById("doc");
+  doc.innerHTML="";
+
+  // thesis
+  doc.appendChild(section("thesis",t.thesisTitle,[
+    el("p","lede",t.thesis),
+    el("p","lede small",t.thesis2)
+  ]));
+
+  // education
+  doc.appendChild(section("edu",t.eduTitle,
+    t.edu.map(d=>el("div","entry",entryRows(d)))
+  ));
+
+  // selected work (with case studies)
+  const workNodes=[];
+  t.work.forEach(d=>{
+    const a=el("article","work",entryRows(d));
+    a.appendChild(el("p","desc",d.desc));
+    if(d.marks) a.appendChild(el("div",null,marksHTML(d.marks)));
+    a.appendChild(el("div","tags",d.tags));
+    if(d.figure) a.appendChild(aurocFigure(t));
+    workNodes.push(a);
+  });
+  doc.appendChild(section("work",t.workTitle,workNodes));
+
+  // more projects (compact)
+  const moreWrap=el("div","compact");
+  t.more.forEach(d=>{
+    const e=el("div","entry",entryRows(d));
+    if(d.desc) e.appendChild(el("div","desc",d.desc));
+    moreWrap.appendChild(e);
+  });
+  doc.appendChild(section("more",t.moreTitle,[moreWrap]));
+
+  // experience (compact)
+  const expWrap=el("div","compact");
+  t.exp.forEach(d=>{
+    const e=el("div","entry",entryRows(d));
+    if(d.desc) e.appendChild(el("div","desc",d.desc));
+    expWrap.appendChild(e);
+  });
+  doc.appendChild(section("exp",t.expTitle,[expWrap]));
+
+  // leadership
+  const leadWrap=el("div","compact");
+  t.lead.forEach(d=>{
+    const e=el("div","entry",entryRows(d));
+    if(d.desc) e.appendChild(el("div","desc",d.desc));
+    leadWrap.appendChild(e);
+  });
+  doc.appendChild(section("lead",t.leadTitle,[leadWrap]));
+
+  // skills
+  const ul=el("ul","skills");
+  t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
+  doc.appendChild(section("skills",t.skillTitle,[ul]));
+
+  // recognition
+  const rul=el("ul","rec");
+  t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
+  doc.appendChild(section("rec",t.recTitle,[rul]));
+
+  observeSections();
+}
+
+/* ---- EEG trace (client-generated, deterministic) ----------------------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function makeEEGPath(w,h,seed){
+  const rnd=mulberry32(seed),mid=h/2,N=520;
+  const comps=[[0.010,h*0.11,rnd()*6.28],[0.024,h*0.07,rnd()*6.28],[0.058,h*0.045,rnd()*6.28],[0.12,h*0.02,rnd()*6.28]];
+  const pts=[];
+  for(let i=0;i<=N;i++){
+    const x=i/N*w; let y=mid;
+    for(const [f,a,p] of comps) y+=Math.sin(i*f+p)*a;
+    y+=(rnd()-0.5)*h*0.05;
+    if(rnd()<0.010) y-=(h*0.24)*(0.6+rnd()*0.4); // sparse deflection
+    pts.push([x,Math.max(2,Math.min(h-2,y))]);
+  }
+  return "M "+pts.map(p=>p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" L ");
+}
+function drawTrace(){
+  const path=document.getElementById("eeg");
+  const d=makeEEGPath(1000,76,20260609);
+  path.setAttribute("d",d);
+  const reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if(reduce) return;
+  const len=path.getTotalLength();
+  path.style.strokeDasharray=len; path.style.strokeDashoffset=len;
+  path.getBoundingClientRect(); // reflow
+  path.style.transition="stroke-dashoffset 1.7s cubic-bezier(.25,.6,.3,1)";
+  requestAnimationFrame(()=>{path.style.strokeDashoffset="0";});
+}
+
+/* ---- scroll reveal + figure draw --------------------------------------- */
+let io;
+function observeSections(){
+  if(io) io.disconnect();
+  io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add("in");
+        const fig=e.target.querySelector(".fig");
+        if(fig) fig.classList.add("drawn");
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll(".sec").forEach(s=>io.observe(s));
+}
+
+/* ---- language toggle --------------------------------------------------- */
+document.querySelectorAll(".lang button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const lang=btn.getAttribute("data-lang");
+    document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed", b===btn?"true":"false"));
+    render(lang);
+  });
+});
+
+/* ---- init -------------------------------------------------------------- */
+render("en");
+drawTrace();
+</script>
+</body>
+</html>
