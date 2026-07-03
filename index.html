@@ -29,6 +29,8 @@
   --signal-soft:rgba(213,94,0,.13);
   --fig-honest:#D55E00; /* AUROC honest bar */
   --fig-leaky:#8A9098;  /* AUROC leaky bar (muted) */
+  --pd:#D55E00;         /* class: Parkinson (Okabe-Ito vermillion) */
+  --hc:#0072B2;         /* class: healthy control (Okabe-Ito blue) */
   /* Okabe-Ito section spectrum: an ordered, accessible rainbow used as index */
   --c0:#0072B2; --c1:#009E73; --c2:#D55E00; --c3:#E69F00;
   --c4:#56B4E9; --c5:#CC79A7; --c6:#009E73; --c7:#0072B2;
@@ -52,6 +54,8 @@ html[data-theme="dark"]{
   --signal-soft:rgba(209,154,102,.16);
   --fig-honest:#98C379; /* One Dark string green: the honest number */
   --fig-leaky:#5C6169;
+  --pd:#E06C75;         /* class: Parkinson (One Dark variable red) */
+  --hc:#61AFEF;         /* class: healthy control (One Dark function blue) */
   /* One Dark semantic colors as the section spectrum */
   --c0:#61AFEF; --c1:#98C379; --c2:#E06C75; --c3:#D19A66;
   --c4:#56B6C2; --c5:#C678DD; --c6:#98C379; --c7:#E5C07B;
@@ -184,6 +188,34 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .colo a:hover{color:var(--ink);border-bottom-color:var(--signal)}
 .colo .note{max-width:42ch;line-height:1.55}
 
+/* interactive leakage demo -------------------------------------------------- */
+.demo{margin:.2rem 0 0}
+.demo-intro{color:var(--muted);max-width:var(--measure);margin:0 0 1.1rem}
+.demo-toggle{display:inline-flex;border:1px solid var(--hair);font-family:var(--mono);font-size:.74rem;margin-bottom:1.3rem}
+.demo-toggle button{font:inherit;color:var(--faint);background:none;border:none;cursor:pointer;padding:.42rem .85rem;letter-spacing:.03em;transition:color .2s,background .2s}
+.demo-toggle button[aria-pressed="true"]{color:var(--ink);background:var(--panel)}
+.demo-toggle button:not([aria-pressed="true"]):hover{color:var(--muted)}
+.demo-panels{display:flex;flex-wrap:wrap;gap:1.4rem 2.2rem;align-items:flex-start}
+.demo-panel{flex:1 1 270px;min-width:250px}
+.demo-panel h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:0 0 .7rem}
+.demo svg{width:100%;height:auto;display:block;overflow:visible}
+.demo .dot{stroke:transparent;stroke-width:2.4;transition:stroke .35s ease}
+.demo .dot.test{stroke:var(--link)}
+.demo .axis{stroke:var(--hair);stroke-width:1}
+.demo .chance{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 3;opacity:.7}
+.demo .roc-curve{fill:none;stroke-width:2.4;stroke-linejoin:round;transition:stroke .4s ease}
+.demo .roc-band{stroke:none;opacity:.16;transition:fill .4s ease}
+.demo[data-split="segment"] .roc-curve,.demo[data-split="segment"] .roc-band,.demo[data-split="segment"] .auroc-val{stroke:var(--fig-leaky);fill:var(--fig-leaky)}
+.demo[data-split="subject"] .roc-curve,.demo[data-split="subject"] .roc-band,.demo[data-split="subject"] .auroc-val{stroke:var(--fig-honest);fill:var(--fig-honest)}
+.demo .auroc-val{font-family:var(--mono);font-weight:600;stroke:none}
+.demo .auroc-lab,.demo .ax-lab{font-family:var(--mono);fill:var(--faint)}
+.demo .slab{font-family:var(--mono);fill:var(--muted)}
+.demo-legend{display:flex;gap:1.3rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:.8rem 0 0;flex-wrap:wrap}
+.demo-legend span{display:inline-flex;align-items:center;gap:.42rem}
+.demo-legend svg{width:14px;height:14px;overflow:visible}
+.demo-cap{font-size:.9rem;color:var(--muted);max-width:60ch;margin:1.2rem 0 0}
+.demo-cap b{color:var(--ink);font-weight:600}
+
 a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 
 @media(max-width:760px){
@@ -274,6 +306,19 @@ const C = {
     thesisTitle:"Statement",
     thesis:"I build brain-computer interfaces and neural signal-processing pipelines. My work is organized around a discipline that is easy to state and hard to keep: <b>validate models the honest way, even when the honest number is the worse one.</b>",
     thesis2:"In one EEG study for Parkinson's detection, conventional segment-wise validation reported an AUROC near 0.99. Under subject-wise validation, the same pipeline settled around 0.66. The gap was information leakage, not skill; the honest number is the one worth reporting.",
+    demoTitle:"Demonstration",
+    demoIntro:"Same data, same model; two ways to split it for cross-validation. Toggle the split and watch the AUROC move. The only thing that changes is whether a subject is allowed to appear in both train and test.",
+    demoGridTitle:"Train / test assignment",
+    demoRocTitle:"ROC",
+    splitSeg:"Segment-wise",
+    splitSubj:"Subject-wise",
+    aurocLab:"AUROC",
+    legTrain:"train",
+    legTest:"test (held out)",
+    legPD:"PD",
+    legHC:"HC",
+    capSeg:"<b>Segment-wise (leaky).</b> Epochs are shuffled at random, so every subject donates epochs to both train and test. The model can recognize the subject rather than the disease, and the AUROC inflates toward 1.",
+    capSubj:"<b>Subject-wise (honest).</b> Whole subjects are held out, so no one appears on both sides. This is the number that actually predicts performance on a new patient. Shaded band: ±1 SD across folds; dashed line: chance.",
     eduTitle:"Education",
     edu:[
       {org:"UNAM, School of Medicine",loc:"Mexico City",role:"B.S. Neuroscience · GPA 9.30 / 10.0",dates:"Aug 2023 – Jun 2027 (expected)"},
@@ -343,6 +388,19 @@ const C = {
     thesisTitle:"Declaración",
     thesis:"Construyo interfaces cerebro-computadora y pipelines de procesamiento de señales neuronales. Mi trabajo gira en torno a una disciplina fácil de enunciar y difícil de sostener: <b>validar los modelos de forma honesta, incluso cuando el número honesto es el peor.</b>",
     thesis2:"En un estudio de EEG para detección de Parkinson, la validación convencional segment-wise reportó un AUROC cercano a 0.99. Con validación subject-wise, el mismo pipeline se estabilizó alrededor de 0.66. La diferencia era fuga de información, no habilidad; el número honesto es el que vale la pena reportar.",
+    demoTitle:"Demostración",
+    demoIntro:"Los mismos datos y el mismo modelo; dos formas de particionar para validación cruzada. Alterna la partición y observa cómo se mueve el AUROC. Lo único que cambia es si un sujeto puede aparecer en train y test a la vez.",
+    demoGridTitle:"Asignación train / test",
+    demoRocTitle:"ROC",
+    splitSeg:"Segment-wise",
+    splitSubj:"Subject-wise",
+    aurocLab:"AUROC",
+    legTrain:"train",
+    legTest:"test (retenido)",
+    legPD:"PD",
+    legHC:"HC",
+    capSeg:"<b>Segment-wise (con fuga).</b> Las épocas se mezclan al azar, así que cada sujeto aporta épocas a train y a test. El modelo puede reconocer al sujeto en vez de la enfermedad, y el AUROC se infla hacia 1.",
+    capSubj:"<b>Subject-wise (honesto).</b> Se retienen sujetos completos, así que ninguno aparece en ambos lados. Este es el número que de verdad predice el desempeño en un paciente nuevo. Banda: ±1 DE entre folds; línea discontinua: azar.",
     eduTitle:"Educación",
     edu:[
       {org:"UNAM, Facultad de Medicina",loc:"CDMX, México",role:"Licenciatura en Neurociencias · Promedio 9.30 / 10.0",dates:"ago 2023 – jun 2027 (esperado)"},
@@ -453,6 +511,103 @@ function aurocFigure(t){
   return fig;
 }
 
+/* ---- interactive leakage demo ----------------------------------------- */
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-(((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t)*Math.exp(-x*x);return x>=0?y:-y;}
+const _ncdf=x=>0.5*(1+erf(x/Math.SQRT2));
+function _ninv(p){const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.357751867269,-30.66479806614716,2.506628277459239];const b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572];const c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783];const d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416];const pl=0.02425,ph=1-pl;let q,r;if(p<pl){q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}if(p<=ph){q=p-0.5;r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+const RX=f=>42+f*246, RY=v=>12+(1-v)*250;
+function rocPts(a){const A=Math.SQRT2*_ninv(Math.min(0.999,Math.max(0.501,a)));const p=[[0,0]];for(let i=1;i<=59;i++){const f=i/60;p.push([f,_ncdf(A+_ninv(f))]);}p.push([1,1]);return p;}
+const rocPath=a=>"M "+rocPts(a).map(p=>RX(p[0]).toFixed(1)+" "+RY(p[1]).toFixed(1)).join(" L ");
+function bandPath(a,sd){const up=rocPts(Math.min(0.999,a+sd)),lo=rocPts(Math.max(0.501,a-sd));return "M "+up.map(p=>RX(p[0]).toFixed(1)+" "+RY(p[1]).toFixed(1)).join(" L ")+" L "+lo.reverse().map(p=>RX(p[0]).toFixed(1)+" "+RY(p[1]).toFixed(1)).join(" L ")+" Z";}
+const DEMO_STATE={segment:{a:0.99,sd:0.01},subject:{a:0.66,sd:0.045}};
+
+function buildDemo(t){
+  const fig=el("figure","demo"); fig.setAttribute("data-split","segment");
+  fig.appendChild(el("p","demo-intro",t.demoIntro));
+
+  const tg=el("div","demo-toggle"); tg.setAttribute("role","group"); tg.setAttribute("aria-label",t.demoTitle);
+  tg.innerHTML=`<button type="button" data-split-set="segment" aria-pressed="true">${t.splitSeg}</button><button type="button" data-split-set="subject" aria-pressed="false">${t.splitSubj}</button>`;
+  fig.appendChild(tg);
+
+  const panels=el("div","demo-panels");
+  // grid: subjects x epochs; shape encodes class (CVD-safe), ring encodes test
+  const nS=8,nE=6, gx0=30,gx1=290,gy0=16,gy1=196;
+  const colX=c=>gx0+(c+0.5)*((gx1-gx0)/nE), rowY=r=>gy0+(r+0.5)*((gy1-gy0)/nS);
+  let dots="", labels="";
+  for(let r=0;r<nS;r++){
+    labels+=`<text class="slab" x="24" y="${(rowY(r)+3).toFixed(1)}" font-size="8" text-anchor="end">S${r+1}</text>`;
+    const pd = r<4;
+    for(let c=0;c<nE;c++){
+      const cx=colX(c),cy=rowY(r);
+      if(pd) dots+=`<circle class="dot" data-r="${r}" data-c="${c}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4.6" fill="var(--pd)"/>`;
+      else   dots+=`<rect class="dot" data-r="${r}" data-c="${c}" x="${(cx-4.4).toFixed(1)}" y="${(cy-4.4).toFixed(1)}" width="8.8" height="8.8" fill="var(--hc)"/>`;
+    }
+  }
+  const gridSvg=`<svg viewBox="0 0 300 210" role="img" aria-label="${t.demoGridTitle}">${labels}${dots}</svg>`;
+  panels.appendChild(el("div","demo-panel",`<h4>${t.demoGridTitle}</h4>${gridSvg}`));
+
+  const rocSvg=`<svg viewBox="0 0 300 300" role="img" aria-label="ROC">
+    <line class="chance" x1="${RX(0)}" y1="${RY(0)}" x2="${RX(1)}" y2="${RY(1)}"/>
+    <path class="roc-band" d="${bandPath(0.99,0.01)}"/>
+    <path class="roc-curve" d="${rocPath(0.99)}"/>
+    <line class="axis" x1="42" y1="12" x2="42" y2="262"/>
+    <line class="axis" x1="42" y1="262" x2="288" y2="262"/>
+    <text class="ax-lab" x="38" y="266" font-size="8" text-anchor="end">0</text>
+    <text class="ax-lab" x="288" y="274" font-size="8" text-anchor="middle">1</text>
+    <text class="ax-lab" x="165" y="286" font-size="9" text-anchor="middle">FPR</text>
+    <text class="ax-lab" x="15" y="137" font-size="9" text-anchor="middle" transform="rotate(-90 15 137)">TPR</text>
+    <text class="auroc-lab" x="150" y="236" font-size="9">${t.aurocLab}</text>
+    <text class="auroc-val" x="150" y="256" font-size="20">0.99</text>
+  </svg>`;
+  panels.appendChild(el("div","demo-panel",`<h4>${t.demoRocTitle}</h4>${rocSvg}`));
+  fig.appendChild(panels);
+
+  const legend=el("div","demo-legend");
+  legend.innerHTML=
+    `<span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="var(--pd)"/></svg>${t.legPD}</span>`+
+    `<span><svg viewBox="0 0 14 14"><rect x="2" y="2" width="10" height="10" fill="var(--hc)"/></svg>${t.legHC}</span>`+
+    `<span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="none" stroke="var(--link)" stroke-width="2"/></svg>${t.legTest}</span>`;
+  fig.appendChild(legend);
+
+  const cap=el("p","demo-cap",t.capSeg); fig.appendChild(cap);
+
+  // behavior
+  const gridDots=[...fig.querySelectorAll(".dot")];
+  const curve=fig.querySelector(".roc-curve"), band=fig.querySelector(".roc-band"), val=fig.querySelector(".auroc-val");
+  const reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let cur={a:0.99,sd:0.01};
+  function paintGrid(mode){
+    gridDots.forEach(dd=>{
+      const r=+dd.getAttribute("data-r"), c=+dd.getAttribute("data-c");
+      const test = mode==="segment" ? (c===2||c===5) : (r===3||r===7);
+      dd.classList.toggle("test",test);
+    });
+  }
+  function paintRoc(a,sd){ curve.setAttribute("d",rocPath(a)); band.setAttribute("d",bandPath(a,sd)); val.textContent=a.toFixed(2); }
+  function toState(mode){
+    const tgt=DEMO_STATE[mode];
+    if(reduce){ cur={a:tgt.a,sd:tgt.sd}; paintRoc(cur.a,cur.sd); return; }
+    const from={a:cur.a,sd:cur.sd}, t0=performance.now(), dur=480;
+    (function step(now){
+      const k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3);
+      cur.a=from.a+(tgt.a-from.a)*e; cur.sd=from.sd+(tgt.sd-from.sd)*e;
+      paintRoc(cur.a,cur.sd);
+      if(k<1) requestAnimationFrame(step);
+    })(performance.now());
+  }
+  tg.querySelectorAll("button").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const mode=b.getAttribute("data-split-set");
+      tg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+      fig.setAttribute("data-split",mode);
+      cap.innerHTML = mode==="segment"?t.capSeg:t.capSubj;
+      paintGrid(mode); toState(mode);
+    });
+  });
+  paintGrid("segment"); paintRoc(0.99,0.01);
+  return fig;
+}
+
 /* ---- build the document ------------------------------------------------ */
 function render(lang){
   const t=C[lang];
@@ -487,9 +642,12 @@ function render(lang){
     el("p","lede small",t.thesis2)
   ],0));
 
+  // interactive demo (the signature: proves the thesis live)
+  doc.appendChild(section("demo",t.demoTitle,[buildDemo(t)],1));
+
   // education
   doc.appendChild(section("edu",t.eduTitle,
-    t.edu.map(d=>el("div","entry",entryRows(d))),1
+    t.edu.map(d=>el("div","entry",entryRows(d))),2
   ));
 
   // selected work (with case studies)
@@ -499,10 +657,9 @@ function render(lang){
     a.appendChild(el("p","desc",d.desc));
     if(d.marks) a.appendChild(el("div",null,marksHTML(d.marks)));
     a.appendChild(el("div","tags",d.tags));
-    if(d.figure) a.appendChild(aurocFigure(t));
     workNodes.push(a);
   });
-  doc.appendChild(section("work",t.workTitle,workNodes,2));
+  doc.appendChild(section("work",t.workTitle,workNodes,3));
 
   // more projects (compact)
   const moreWrap=el("div","compact");
@@ -511,7 +668,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     moreWrap.appendChild(e);
   });
-  doc.appendChild(section("more",t.moreTitle,[moreWrap],3));
+  doc.appendChild(section("more",t.moreTitle,[moreWrap],4));
 
   // experience (compact)
   const expWrap=el("div","compact");
@@ -520,7 +677,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     expWrap.appendChild(e);
   });
-  doc.appendChild(section("exp",t.expTitle,[expWrap],4));
+  doc.appendChild(section("exp",t.expTitle,[expWrap],5));
 
   // leadership
   const leadWrap=el("div","compact");
@@ -529,17 +686,17 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     leadWrap.appendChild(e);
   });
-  doc.appendChild(section("lead",t.leadTitle,[leadWrap],5));
+  doc.appendChild(section("lead",t.leadTitle,[leadWrap],6));
 
   // skills
   const ul=el("ul","skills");
   t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
-  doc.appendChild(section("skills",t.skillTitle,[ul],6));
+  doc.appendChild(section("skills",t.skillTitle,[ul],7));
 
   // recognition
   const rul=el("ul","rec");
   t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
-  doc.appendChild(section("rec",t.recTitle,[rul],7));
+  doc.appendChild(section("rec",t.recTitle,[rul],8));
 
   observeSections();
 }
