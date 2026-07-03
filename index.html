@@ -228,6 +228,21 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .demo-cap{font-size:.9rem;color:var(--muted);max-width:60ch;margin:1.2rem 0 0}
 .demo-cap b{color:var(--ink);font-weight:600}
 
+/* posters grid ------------------------------------------------------------- */
+.posters{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:640px){.posters{grid-template-columns:1fr}}
+.poster{display:flex;flex-direction:column;gap:.7rem;color:inherit;border:1px solid var(--hair-2);padding:.7rem;transition:border-color .2s ease}
+.poster:hover{border-color:var(--link)}
+.poster-thumb{position:relative;aspect-ratio:4/3;background:var(--panel);border:1px solid var(--hair-2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.poster-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.poster-ph{display:none;font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;color:var(--faint)}
+.poster-thumb.noimg img{display:none}
+.poster-thumb.noimg .poster-ph{display:flex}
+.poster-info{display:flex;flex-direction:column;gap:.22rem}
+.poster-title{font-weight:600;line-height:1.32}
+.poster-venue{color:var(--muted);font-size:.9rem;line-height:1.4}
+.poster-date{font-family:var(--mono);font-size:.74rem;color:var(--faint);letter-spacing:.02em}
+
 a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 
 @media(max-width:760px){
@@ -360,6 +375,17 @@ const C = {
        desc:"Led a modular platform acquiring single-channel EEG (NeuroSky MindWave Mobile 2) with real-time visualization (Dash / Plotly) and two neurofeedback modules; presented to 600+ attendees across six academic and industry forums."}
     ],
     expTitle:"Experience",
+    postersTitle:"Posters",
+    posters:[
+      {title:"Honest validation reshapes EEG-based Parkinson's disease detection",
+       venue:"10th Neuroengineering Summer School · University of Genoa (DIBRIS), Camogli, Italy",
+       meta:"Poster · June 2026",
+       thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
+      {title:"Brain-disorder diagnosis from EEG with machine learning",
+       venue:"IV Neurosymposium · ENES Juriquilla, UNAM",
+       meta:"Poster, main author · 2025",
+       thumb:"./posters/juriquilla.jpg", href:"./posters/juriquilla.pdf"}
+    ],
     exp:[
       {org:"10th Neuroengineering Summer School",loc:"University of Genoa (DIBRIS), Italy",role:"Selected participant · one of 30 international researchers",dates:"Jun 2026",
        desc:"Hands-on protocols with polymer scaffolds for 2D/3D in-vitro neural networks, multi-electrode array (MEA) recordings, and advanced-microscopy image processing."},
@@ -442,6 +468,17 @@ const C = {
        desc:"Dirigí una plataforma modular que adquiere EEG de un canal (NeuroSky MindWave Mobile 2) con visualización en tiempo real (Dash / Plotly) y dos módulos de neurofeedback; presentada ante más de 600 asistentes en seis foros académicos e industriales."}
     ],
     expTitle:"Experiencia",
+    postersTitle:"Carteles",
+    posters:[
+      {title:"Honest validation reshapes EEG-based Parkinson's disease detection",
+       venue:"10th Neuroengineering Summer School · Universidad de Génova (DIBRIS), Camogli, Italia",
+       meta:"Cartel · junio 2026",
+       thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
+      {title:"Diagnóstico de trastornos cerebrales por EEG con machine learning",
+       venue:"IV Neurosimposio · ENES Juriquilla, UNAM",
+       meta:"Cartel, autor principal · 2025",
+       thumb:"./posters/juriquilla.jpg", href:"./posters/juriquilla.pdf"}
+    ],
     exp:[
       {org:"10th Neuroengineering Summer School",loc:"Universidad de Génova (DIBRIS), Italia",role:"Participante seleccionado · uno de 30 investigadores internacionales",dates:"jun 2026",
        desc:"Protocolos prácticos con scaffolds poliméricos para redes neuronales in vitro 2D/3D, registros con multi-electrode arrays (MEA) y procesamiento de imágenes de microscopía avanzada."},
@@ -620,6 +657,26 @@ function buildDemo(t){
   return fig;
 }
 
+function buildPosters(t){
+  const wrap=el("div","posters");
+  t.posters.forEach(p=>{
+    const a=el("a","poster"); a.href=p.href; a.target="_blank"; a.rel="noopener";
+    const th=el("span","poster-thumb");
+    const img=document.createElement("img");
+    img.src=p.thumb; img.alt=p.title; img.loading="lazy";
+    img.onerror=()=>th.classList.add("noimg");   // graceful: show placeholder until the file exists
+    const ph=el("span","poster-ph","POSTER");
+    th.appendChild(img); th.appendChild(ph);
+    const info=el("span","poster-info",
+      `<span class="poster-title">${p.title}</span>`+
+      `<span class="poster-venue">${p.venue}</span>`+
+      `<span class="poster-date">${p.meta}</span>`);
+    a.appendChild(th); a.appendChild(info);
+    wrap.appendChild(a);
+  });
+  return wrap;
+}
+
 /* ---- build the document ------------------------------------------------ */
 function render(lang){
   const t=C[lang];
@@ -682,6 +739,9 @@ function render(lang){
   });
   doc.appendChild(section("more",t.moreTitle,[moreWrap],4));
 
+  // posters
+  doc.appendChild(section("posters",t.postersTitle,[buildPosters(t)],5));
+
   // experience (compact)
   const expWrap=el("div","compact");
   t.exp.forEach(d=>{
@@ -689,7 +749,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     expWrap.appendChild(e);
   });
-  doc.appendChild(section("exp",t.expTitle,[expWrap],5));
+  doc.appendChild(section("exp",t.expTitle,[expWrap],6));
 
   // leadership
   const leadWrap=el("div","compact");
@@ -698,17 +758,17 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     leadWrap.appendChild(e);
   });
-  doc.appendChild(section("lead",t.leadTitle,[leadWrap],6));
+  doc.appendChild(section("lead",t.leadTitle,[leadWrap],7));
 
   // skills
   const ul=el("ul","skills");
   t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
-  doc.appendChild(section("skills",t.skillTitle,[ul],7));
+  doc.appendChild(section("skills",t.skillTitle,[ul],8));
 
   // recognition
   const rul=el("ul","rec");
   t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
-  doc.appendChild(section("rec",t.recTitle,[rul],8));
+  doc.appendChild(section("rec",t.recTitle,[rul],9));
 
   observeSections();
 }
