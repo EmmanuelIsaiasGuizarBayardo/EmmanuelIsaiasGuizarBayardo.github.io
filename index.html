@@ -243,6 +243,15 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .poster-venue{color:var(--muted);font-size:.9rem;line-height:1.4}
 .poster-date{font-family:var(--mono);font-size:.74rem;color:var(--faint);letter-spacing:.02em}
 
+/* signal filter demo ------------------------------------------------------- */
+.demo .axis{stroke:var(--hair);stroke-width:1}
+.sig-raw{fill:none;stroke:var(--faint);stroke-width:1.2;opacity:.85}
+.sig-filt{fill:none;stroke:var(--signal);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.spec-raw{fill:none;stroke:var(--faint);stroke-width:1.1;opacity:.75}
+.spec-filt{fill:var(--signal);opacity:.9;stroke:none}
+.flabel{font-family:var(--mono);font-size:9px;fill:var(--faint)}
+.flabel.sig{fill:var(--signal)}
+
 a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 
 @media(max-width:760px){
@@ -346,6 +355,18 @@ const C = {
     legHC:"HC",
     capSeg:"<b>Segment-wise (leaky).</b> Epochs are shuffled at random, so every subject donates epochs to both train and test. The model can recognize the subject rather than the disease, and the AUROC inflates toward 1.",
     capSubj:"<b>Subject-wise (honest).</b> Whole subjects are held out, so no one appears on both sides. This is the number that actually predicts performance on a new patient. Shaded band: ±1 SD across folds; dashed line: chance.",
+    sigTitle:"Signal",
+    sigIntro:"A synthetic EEG trace, filtered in your browser (FFT, frequency domain). Toggle each stage and watch the artifact leave both the trace and the spectrum.",
+    sigTime:"Time · 2 s",
+    sigSpec:"Spectrum · 0–80 Hz",
+    sigHP:"High-pass 1 Hz",
+    sigNotch:"Notch 60 Hz",
+    sigRaw:"raw",
+    sigFilt:"filtered",
+    sigCap0:"Raw trace: a slow baseline drift wanders the signal and 60 Hz line noise lays a fuzzy overlay on top.",
+    sigCapHP:"High-pass at 1 Hz flattens the baseline drift; the 60 Hz line noise still remains.",
+    sigCapN:"The 60 Hz notch removes the line noise; the slow drift still remains.",
+    sigCapBoth:"High-pass and 60 Hz notch together leave the physiological rhythms, clean.",
     eduTitle:"Education",
     edu:[
       {org:"UNAM, School of Medicine",loc:"Mexico City",role:"B.S. Neuroscience · GPA 9.30 / 10.0",dates:"Aug 2023 – Jun 2027 (expected)"},
@@ -379,11 +400,11 @@ const C = {
     posters:[
       {title:"Honest validation reshapes EEG-based Parkinson's disease detection",
        venue:"10th Neuroengineering Summer School · University of Genoa (DIBRIS), Camogli, Italy",
-       meta:"Poster · June 2026",
+       meta:"Poster · 09 June 2026",
        thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
-      {title:"Brain-disorder diagnosis from EEG with machine learning",
+      {title:"Diagnosis of brain disorders via electroencephalography and machine learning",
        venue:"IV Neurosymposium · ENES Juriquilla, UNAM",
-       meta:"Poster, main author · 2025",
+       meta:"Poster, main author · 30 Oct 2025",
        thumb:"./posters/juriquilla.jpg", href:"./posters/juriquilla.pdf"}
     ],
     exp:[
@@ -439,6 +460,18 @@ const C = {
     legHC:"HC",
     capSeg:"<b>Segment-wise (con fuga).</b> Las épocas se mezclan al azar, así que cada sujeto aporta épocas a train y a test. El modelo puede reconocer al sujeto en vez de la enfermedad, y el AUROC se infla hacia 1.",
     capSubj:"<b>Subject-wise (honesto).</b> Se retienen sujetos completos, así que ninguno aparece en ambos lados. Este es el número que de verdad predice el desempeño en un paciente nuevo. Banda: ±1 DE entre folds; línea discontinua: azar.",
+    sigTitle:"Señal",
+    sigIntro:"Una traza EEG sintética, filtrada en tu navegador (FFT, dominio de la frecuencia). Alterna cada etapa y observa cómo el artefacto abandona la traza y el espectro.",
+    sigTime:"Tiempo · 2 s",
+    sigSpec:"Espectro · 0–80 Hz",
+    sigHP:"Pasa-altas 1 Hz",
+    sigNotch:"Notch 60 Hz",
+    sigRaw:"cruda",
+    sigFilt:"filtrada",
+    sigCap0:"Traza cruda: una deriva lenta de línea base vaga por la señal y el ruido de línea de 60 Hz añade una capa difusa encima.",
+    sigCapHP:"El pasa-altas a 1 Hz aplana la deriva de línea base; el ruido de 60 Hz aún permanece.",
+    sigCapN:"El notch de 60 Hz elimina el ruido de línea; la deriva lenta aún permanece.",
+    sigCapBoth:"Pasa-altas y notch de 60 Hz juntos dejan los ritmos fisiológicos, limpios.",
     eduTitle:"Educación",
     edu:[
       {org:"UNAM, Facultad de Medicina",loc:"CDMX, México",role:"Licenciatura en Neurociencias · Promedio 9.30 / 10.0",dates:"ago 2023 – jun 2027 (esperado)"},
@@ -474,9 +507,9 @@ const C = {
        venue:"10th Neuroengineering Summer School · Universidad de Génova (DIBRIS), Camogli, Italia",
        meta:"Cartel · junio 2026",
        thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
-      {title:"Diagnóstico de trastornos cerebrales por EEG con machine learning",
+      {title:"Diagnóstico de trastornos cerebrales mediante electroencefalografía y aprendizaje automático",
        venue:"IV Neurosimposio · ENES Juriquilla, UNAM",
-       meta:"Cartel, autor principal · 2025",
+       meta:"Cartel, autor principal · 30 oct 2025",
        thumb:"./posters/juriquilla.jpg", href:"./posters/juriquilla.pdf"}
     ],
     exp:[
@@ -677,6 +710,93 @@ function buildPosters(t){
   return wrap;
 }
 
+/* ---- signal filter demo (real FFT-domain filtering) -------------------- */
+function fft(re,im,inv){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){ let bit=n>>1; for(;j&bit;bit>>=1) j^=bit; j^=bit;
+    if(i<j){ const tr=re[i];re[i]=re[j];re[j]=tr; const ti=im[i];im[i]=im[j];im[j]=ti; } }
+  for(let len=2;len<=n;len<<=1){
+    const ang=(inv?2:-2)*Math.PI/len, wr=Math.cos(ang), wi=Math.sin(ang);
+    for(let i=0;i<n;i+=len){ let cwr=1,cwi=0;
+      for(let k=0;k<len/2;k++){
+        const a=i+k, b=i+k+len/2;
+        const vr=re[b]*cwr-im[b]*cwi, vi=re[b]*cwi+im[b]*cwr;
+        re[b]=re[a]-vr; im[b]=im[a]-vi; re[a]+=vr; im[a]+=vi;
+        const nr=cwr*wr-cwi*wi; cwi=cwr*wi+cwi*wr; cwr=nr;
+      }
+    }
+  }
+  if(inv){ for(let i=0;i<n;i++){ re[i]/=n; im[i]/=n; } }
+}
+
+function buildFilter(t){
+  const fs=256, N=1024, win=512;
+  const rng=mulberry32(0x5EED11);
+  const comps=[[0.4,1.3],[2.5,0.55],[6,0.5],[10,0.9],[20,0.32],[60,0.75]];  // drift, delta, theta, alpha, beta, 60Hz line
+  const ph=comps.map(()=>rng()*6.283);
+  const x=new Float64Array(N);
+  for(let i=0;i<N;i++){ let v=0; const s=i/fs;
+    comps.forEach((c,ci)=> v+=Math.sin(2*Math.PI*c[0]*s+ph[ci])*c[1]);
+    v+=(rng()-0.5)*0.24; x[i]=v; }
+
+  const fig=el("figure","demo");
+  fig.appendChild(el("p","demo-intro",t.sigIntro));
+  const tg=el("div","demo-toggle"); tg.setAttribute("role","group"); tg.setAttribute("aria-label",t.sigTitle);
+  tg.innerHTML=`<button type="button" data-f="hp" aria-pressed="false">${t.sigHP}</button><button type="button" data-f="notch" aria-pressed="false">${t.sigNotch}</button>`;
+  fig.appendChild(tg);
+
+  const panels=el("div","demo-panels");
+  panels.appendChild(el("div","demo-panel",`<h4>${t.sigTime}</h4><svg viewBox="0 0 300 150" role="img" aria-label="${t.sigTime}"><line class="axis" x1="8" y1="72" x2="292" y2="72"/><path class="sig-raw" d=""/><path class="sig-filt" d=""/></svg>`));
+  panels.appendChild(el("div","demo-panel",`<h4>${t.sigSpec}</h4><svg viewBox="0 0 300 150" role="img" aria-label="${t.sigSpec}"><line class="axis" x1="30" y1="126" x2="292" y2="126"/><line class="axis" x1="30" y1="12" x2="30" y2="126"/><path class="spec-filt" d=""/><path class="spec-raw" d=""/><g class="ticks"></g></svg>`));
+  fig.appendChild(panels);
+
+  const legend=el("div","demo-legend");
+  legend.innerHTML=`<span><svg viewBox="0 0 20 8"><line x1="1" y1="4" x2="19" y2="4" stroke="var(--faint)" stroke-width="1.4"/></svg>${t.sigRaw}</span>`+
+    `<span><svg viewBox="0 0 20 8"><line x1="1" y1="4" x2="19" y2="4" stroke="var(--signal)" stroke-width="2.2"/></svg>${t.sigFilt}</span>`;
+  fig.appendChild(legend);
+  const cap=el("p","demo-cap",t.sigCap0); fig.appendChild(cap);
+
+  const sigRaw=fig.querySelector(".sig-raw"), sigFilt=fig.querySelector(".sig-filt");
+  const specRawP=fig.querySelector(".spec-raw"), specFiltP=fig.querySelector(".spec-filt");
+  const sx=f=>30+(f/80)*262;
+  let tks="";
+  [0,20,40,60,80].forEach(f=>{ tks+=`<line x1="${sx(f).toFixed(1)}" y1="126" x2="${sx(f).toFixed(1)}" y2="130" stroke="var(--hair)"/><text class="flabel" x="${sx(f).toFixed(1)}" y="140" text-anchor="middle">${f}</text>`; });
+  tks+=`<text class="flabel sig" x="${sx(60).toFixed(1)}" y="22" text-anchor="middle">60 Hz</text>`;
+  fig.querySelector(".ticks").innerHTML=tks;
+
+  const rre=Float64Array.from(x), rim=new Float64Array(N); fft(rre,rim,false);
+  const rawMag=new Float64Array(N/2+1); let maxMag=1e-9;
+  for(let k=0;k<=N/2;k++){ rawMag[k]=Math.hypot(rre[k],rim[k]); if(k>0&&k<=320) maxMag=Math.max(maxMag,rawMag[k]); }
+  let maxA=1e-9; for(let i=0;i<win;i++) maxA=Math.max(maxA,Math.abs(x[i]));
+
+  const xt=i=>8+(i/(win-1))*284, yt=v=>72-(v/maxA)*54, sy=m=>126-(m/maxMag)*112;
+  const pTime=a=>{let d="M "+xt(0).toFixed(1)+" "+yt(a[0]).toFixed(1);for(let i=1;i<win;i++)d+=" L "+xt(i).toFixed(1)+" "+yt(a[i]).toFixed(1);return d;};
+  const pLine=m=>{let d="M "+sx(0).toFixed(1)+" "+sy(m[0]).toFixed(1);for(let k=1;k<=320;k++)d+=" L "+sx(k*fs/N).toFixed(1)+" "+sy(m[k]).toFixed(1);return d;};
+  const pArea=m=>{let d="M 30 126";for(let k=0;k<=320;k++)d+=" L "+sx(k*fs/N).toFixed(1)+" "+sy(m[k]).toFixed(1);d+=" L "+sx(320*fs/N).toFixed(1)+" 126 Z";return d;};
+
+  sigRaw.setAttribute("d",pTime(x));
+  specRawP.setAttribute("d",pLine(rawMag));
+
+  function update(){
+    const hp=tg.querySelector('[data-f="hp"]').getAttribute("aria-pressed")==="true";
+    const notch=tg.querySelector('[data-f="notch"]').getAttribute("aria-pressed")==="true";
+    const re=Float64Array.from(x), im=new Float64Array(N); fft(re,im,false);
+    for(let k=0;k<N;k++){ const kk=k<=N/2?k:k-N, f=Math.abs(kk*fs/N);
+      if((hp&&f<1)||(notch&&Math.abs(f-60)<2)){ re[k]=0; im[k]=0; } }
+    const fm=new Float64Array(N/2+1);
+    for(let k=0;k<=N/2;k++) fm[k]=Math.hypot(re[k],im[k]);
+    fft(re,im,true);
+    sigFilt.setAttribute("d",pTime(re));
+    specFiltP.setAttribute("d",pArea(fm));
+    cap.innerHTML=(hp&&notch)?t.sigCapBoth:hp?t.sigCapHP:notch?t.sigCapN:t.sigCap0;
+  }
+  tg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")==="true"?"false":"true"); update();
+  }));
+  update();
+  return fig;
+}
+
 /* ---- build the document ------------------------------------------------ */
 function render(lang){
   const t=C[lang];
@@ -714,9 +834,12 @@ function render(lang){
   // interactive demo (the signature: proves the thesis live)
   doc.appendChild(section("demo",t.demoTitle,[buildDemo(t)],1));
 
+  // signal filter demo (DSP craft, live)
+  doc.appendChild(section("signal",t.sigTitle,[buildFilter(t)],2));
+
   // education
   doc.appendChild(section("edu",t.eduTitle,
-    t.edu.map(d=>el("div","entry",entryRows(d))),2
+    t.edu.map(d=>el("div","entry",entryRows(d))),3
   ));
 
   // selected work (with case studies)
@@ -728,7 +851,7 @@ function render(lang){
     a.appendChild(el("div","tags",d.tags));
     workNodes.push(a);
   });
-  doc.appendChild(section("work",t.workTitle,workNodes,3));
+  doc.appendChild(section("work",t.workTitle,workNodes,4));
 
   // more projects (compact)
   const moreWrap=el("div","compact");
@@ -737,10 +860,10 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     moreWrap.appendChild(e);
   });
-  doc.appendChild(section("more",t.moreTitle,[moreWrap],4));
+  doc.appendChild(section("more",t.moreTitle,[moreWrap],5));
 
   // posters
-  doc.appendChild(section("posters",t.postersTitle,[buildPosters(t)],5));
+  doc.appendChild(section("posters",t.postersTitle,[buildPosters(t)],6));
 
   // experience (compact)
   const expWrap=el("div","compact");
@@ -749,7 +872,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     expWrap.appendChild(e);
   });
-  doc.appendChild(section("exp",t.expTitle,[expWrap],6));
+  doc.appendChild(section("exp",t.expTitle,[expWrap],7));
 
   // leadership
   const leadWrap=el("div","compact");
@@ -758,17 +881,17 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     leadWrap.appendChild(e);
   });
-  doc.appendChild(section("lead",t.leadTitle,[leadWrap],7));
+  doc.appendChild(section("lead",t.leadTitle,[leadWrap],8));
 
   // skills
   const ul=el("ul","skills");
   t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
-  doc.appendChild(section("skills",t.skillTitle,[ul],8));
+  doc.appendChild(section("skills",t.skillTitle,[ul],9));
 
   // recognition
   const rul=el("ul","rec");
   t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
-  doc.appendChild(section("rec",t.recTitle,[rul],9));
+  doc.appendChild(section("rec",t.recTitle,[rul],10));
 
   observeSections();
 }
