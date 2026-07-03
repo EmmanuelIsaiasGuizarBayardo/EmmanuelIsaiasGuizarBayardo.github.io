@@ -6,6 +6,8 @@
 <title>Emmanuel Isaías Guízar Bayardo: Neuroengineer</title>
 <meta name="description" content="Neuroengineer building brain-computer interfaces and neural signal-processing pipelines. Work centered on honest model validation: EEG, electrophysiology decoding, and sEMG.">
 <meta name="author" content="Emmanuel Isaías Guízar Bayardo">
+<script>/* set theme before paint to avoid flash; guarded for sandboxed previews */
+(function(){try{var t=localStorage.getItem("theme");if(!t)t=(window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches)?"dark":"light";if(t==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Emmanuel Isaías Guízar Bayardo: Neuroengineer">
 <meta property="og:description" content="Brain-computer interfaces and neural signal-processing pipelines. Work centered on honest model validation.">
@@ -14,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* ---- Light "datasheet" (default). Accents = Okabe-Ito (CVD-safe). ---- */
   --paper:#F1F3F0;      /* pale cool datasheet ground, not warm cream */
   --panel:#F8FAF7;      /* faint lift for figures */
   --ink:#15181A;        /* near-black, slightly cool */
@@ -21,13 +24,37 @@
   --faint:#8A9098;      /* tertiary */
   --hair:#CDD2CC;       /* hairlines, ticks */
   --hair-2:#DEE2DC;
-  --signal:#B67410;     /* amber-gold: reserved strictly for signal + data */
-  --signal-soft:rgba(182,116,16,.14);
+  --link:#0072B2;       /* Okabe-Ito blue: interactive + focus */
+  --signal:#D55E00;     /* Okabe-Ito vermillion: the EEG trace (signal) */
+  --signal-soft:rgba(213,94,0,.13);
+  --fig-honest:#D55E00; /* AUROC honest bar */
+  --fig-leaky:#8A9098;  /* AUROC leaky bar (muted) */
+  /* Okabe-Ito section spectrum: an ordered, accessible rainbow used as index */
+  --c0:#0072B2; --c1:#009E73; --c2:#D55E00; --c3:#E69F00;
+  --c4:#56B4E9; --c5:#CC79A7; --c6:#009E73; --c7:#0072B2;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --measure:66ch;
   --col-label:168px;
   --gap:2.6rem;
+}
+/* ---- Dark "editor": true-black OLED + One Dark (BLK theme) --------------- */
+html[data-theme="dark"]{
+  --paper:#000000;      /* true black for OLED */
+  --panel:#0B0C0D;
+  --ink:#FFFFFF;
+  --muted:#9BA3AD;
+  --faint:#7F848E;      /* One Dark comment gray */
+  --hair:#1C1D20;
+  --hair-2:#141517;
+  --link:#61AFEF;       /* One Dark function blue */
+  --signal:#D19A66;     /* One Dark constant orange: the trace on black */
+  --signal-soft:rgba(209,154,102,.16);
+  --fig-honest:#98C379; /* One Dark string green: the honest number */
+  --fig-leaky:#5C6169;
+  /* One Dark semantic colors as the section spectrum */
+  --c0:#61AFEF; --c1:#98C379; --c2:#E06C75; --c3:#D19A66;
+  --c4:#56B6C2; --c5:#C678DD; --c6:#98C379; --c7:#E5C07B;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -35,7 +62,7 @@ body{
   margin:0;background:var(--paper);color:var(--ink);
   font-family:var(--sans);font-weight:400;font-size:17px;line-height:1.62;
   letter-spacing:.002em;-webkit-font-smoothing:antialiased;
-  padding:0;
+  padding:0;transition:background .3s ease,color .3s ease;
 }
 .wrap{max-width:1040px;margin:0 auto;padding:0 clamp(1.25rem,5vw,3rem)}
 a{color:inherit;text-decoration:none}
@@ -61,6 +88,18 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .lang button[aria-pressed="true"]{color:var(--ink);background:var(--panel)}
 .lang button:not([aria-pressed="true"]):hover{color:var(--muted)}
 
+/* top-right controls: language + theme, same visual grammar */
+.controls{display:flex;gap:.5rem;align-items:stretch}
+.theme{display:flex;border:1px solid var(--hair);background:transparent}
+.theme button{
+  display:flex;align-items:center;justify-content:center;
+  width:30px;color:var(--faint);background:none;border:none;cursor:pointer;
+  padding:0;transition:color .2s,background .2s;
+}
+.theme button[aria-pressed="true"]{color:var(--ink);background:var(--panel)}
+.theme button:not([aria-pressed="true"]):hover{color:var(--muted)}
+.theme svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
 .name{
   font-weight:600;line-height:1.02;letter-spacing:-.02em;margin:0 0 .5rem;
   font-size:clamp(2.35rem,6.4vw,3.75rem);
@@ -75,7 +114,7 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 
 .contact{display:flex;flex-wrap:wrap;gap:0 1.6rem;margin-top:1.7rem;font-family:var(--mono);font-size:.82rem}
 .contact a{color:var(--muted);padding:.15rem 0;border-bottom:1px solid transparent;transition:color .18s,border-color .18s}
-.contact a:hover{color:var(--ink);border-bottom-color:var(--signal)}
+.contact a:hover{color:var(--ink);border-bottom-color:var(--link)}
 
 /* ---- Sections ---------------------------------------------------------- */
 .sec{
@@ -85,7 +124,8 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 }
 .sec.in{opacity:1;transform:none}
 .sec-label{position:relative}
-.sec-label .eyebrow{position:sticky;top:1.4rem}
+.sec-label .eyebrow{position:sticky;top:1.4rem;display:flex;align-items:center;gap:.55rem}
+.tick{width:9px;height:9px;flex:none;background:var(--tick,var(--muted));border-radius:1px}
 .sec-body{min-width:0}
 .lede{font-size:clamp(1.12rem,2.6vw,1.34rem);line-height:1.5;font-weight:400;letter-spacing:-.008em;max-width:38ch}
 .lede.small{font-size:1.02rem;line-height:1.6;max-width:var(--measure);color:var(--muted);margin-top:1.1rem}
@@ -144,7 +184,7 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .colo a:hover{color:var(--ink);border-bottom-color:var(--signal)}
 .colo .note{max-width:42ch;line-height:1.55}
 
-a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 
 @media(max-width:760px){
   .sec{grid-template-columns:1fr;gap:1rem;padding:2.3rem 0}
@@ -162,9 +202,19 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   <header class="mast">
     <div class="mast-top">
       <div class="kicker eyebrow"><span class="dot" aria-hidden="true"></span><span data-k="kicker"></span></div>
-      <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-lang="en" aria-pressed="true">EN</button>
-        <button type="button" data-lang="es" aria-pressed="false">ES</button>
+      <div class="controls">
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        </div>
+        <div class="theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light" aria-pressed="true" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </button>
+          <button type="button" data-theme-set="dark" aria-pressed="false" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          </button>
+        </div>
       </div>
     </div>
     <h1 class="name">Emmanuel Isaías Guízar Bayardo</h1>
@@ -180,7 +230,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
       <a href="mailto:eisaiasgb03@gmail.com">eisaiasgb03@gmail.com</a>
       <a href="https://github.com/EmmanuelIsaiasGuizarBayardo" rel="me noopener">github</a>
       <a href="https://linkedin.com/in/isaias-guizar" rel="me noopener">linkedin</a>
-      <a href="./cv/CV_Emmanuel_Guizar_Bayardo_EN.docx" data-k="cvlink"></a>
+      <a id="cvlink" href="./cv/Resume_Emmanuel_Guizar_Bayardo_EN.pdf" data-k="cvlink"></a>
     </nav>
   </header>
 
@@ -189,6 +239,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
   <footer class="colo">
     <div class="note" data-k="colonote"></div>
     <div>
+      <span data-k="docsLabel"></span><br>
+      <a href="./cv/Resume_Emmanuel_Guizar_Bayardo_EN.pdf">résumé EN</a> ·
+      <a href="./cv/Resume_Emmanuel_Guizar_Bayardo_ES.pdf">ES</a> &nbsp;|&nbsp;
+      <a href="./cv/CV_Emmanuel_Guizar_Bayardo_EN.pdf">CV EN</a> ·
+      <a href="./cv/CV_Emmanuel_Guizar_Bayardo_ES.pdf">ES</a><br>
       <a href="mailto:eisaiasgb03@gmail.com">eisaiasgb03@gmail.com</a> ·
       <a href="https://github.com/EmmanuelIsaiasGuizarBayardo" rel="me noopener">github</a> ·
       <a href="https://linkedin.com/in/isaias-guizar" rel="me noopener">linkedin</a>
@@ -215,7 +270,7 @@ const C = {
     kicker:"Neuroengineering · BCI · Neural signal processing",
     role:"Neuroscience and computer engineering. I build brain-computer interfaces and the signal-processing pipelines behind them.",
     traceL:"EEG · O1–O2 montage", traceR:"acquired signal",
-    cvlink:"cv (docx)",
+    cvlink:"résumé (pdf)", docsLabel:"Documents",
     thesisTitle:"Statement",
     thesis:"I build brain-computer interfaces and neural signal-processing pipelines. My work is organized around a discipline that is easy to state and hard to keep: <b>validate models the honest way, even when the honest number is the worse one.</b>",
     thesis2:"In one EEG study for Parkinson's detection, conventional segment-wise validation reported an AUROC near 0.99. Under subject-wise validation, the same pipeline settled around 0.66. The gap was information leakage, not skill; the honest number is the one worth reporting.",
@@ -284,7 +339,7 @@ const C = {
     kicker:"Neuroingeniería · BCI · Procesamiento de señales neuronales",
     role:"Neurociencia e ingeniería en cómputo. Construyo interfaces cerebro-computadora y los pipelines de procesamiento de señales que las sostienen.",
     traceL:"EEG · montaje O1–O2", traceR:"señal adquirida",
-    cvlink:"cv (docx)",
+    cvlink:"résumé (pdf)", docsLabel:"Documentos",
     thesisTitle:"Declaración",
     thesis:"Construyo interfaces cerebro-computadora y pipelines de procesamiento de señales neuronales. Mi trabajo gira en torno a una disciplina fácil de enunciar y difícil de sostener: <b>validar los modelos de forma honesta, incluso cuando el número honesto es el peor.</b>",
     thesis2:"En un estudio de EEG para detección de Parkinson, la validación convencional segment-wise reportó un AUROC cercano a 0.99. Con validación subject-wise, el mismo pipeline se estabilizó alrededor de 0.66. La diferencia era fuga de información, no habilidad; el número honesto es el que vale la pena reportar.",
@@ -362,9 +417,12 @@ function entryRows(d){
 function marksHTML(marks){
   return `<ul class="marks">`+marks.map(m=>`<li>${m[0]} <span class="v${m[2]?" sig":""}">${m[1]}</span></li>`).join("")+`</ul>`;
 }
-function section(labelKey,label,bodyNodes){
+function section(labelKey,label,bodyNodes,idx){
+  const i = idx==null ? 0 : idx;
   const s=el("section","sec");
-  s.appendChild(el("div","sec-label",`<span class="eyebrow">${label}</span>`));
+  s.setAttribute("data-i", i);
+  const tick = `<span class="tick" style="--tick:var(--c${i%8})" aria-hidden="true"></span>`;
+  s.appendChild(el("div","sec-label",`<span class="eyebrow">${tick}${label}</span>`));
   const b=el("div","sec-body");
   bodyNodes.forEach(n=> b.appendChild(typeof n==="string"?el("div",null,n):n));
   s.appendChild(b);
@@ -386,8 +444,8 @@ function aurocFigure(t){
   const val=(y,r,color)=>`<text x="${(x(r[1])+8).toFixed(1)}" y="${y+barH-2}" fill="${color}" font-size="10.5" font-weight="500">${r[0].toFixed(2)}–${r[1].toFixed(2)}</text>`;
   const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t.figAria}">
     ${chance}
-    ${bar(leakY,seg,"d1","var(--muted)")}${lbl(leakY,t.figSeg)}${val(leakY,seg,"var(--muted)")}
-    ${bar(honY,sub,"d2","var(--signal)")}${lbl(honY,t.figSub)}${val(honY,sub,"var(--signal)")}
+    ${bar(leakY,seg,"d1","var(--fig-leaky)")}${lbl(leakY,t.figSeg)}${val(leakY,seg,"var(--fig-leaky)")}
+    ${bar(honY,sub,"d2","var(--fig-honest)")}${lbl(honY,t.figSub)}${val(honY,sub,"var(--fig-honest)")}
     ${tickMarks}
   </svg>`;
   const fig=el("figure","fig");
@@ -415,6 +473,10 @@ function render(lang){
     if(v!=null) n.innerHTML=v;
   });
   document.documentElement.lang=lang;
+  const cv=document.getElementById("cvlink");
+  if(cv) cv.setAttribute("href", lang==="es"
+    ? "./cv/Resume_Emmanuel_Guizar_Bayardo_ES.pdf"
+    : "./cv/Resume_Emmanuel_Guizar_Bayardo_EN.pdf");
 
   const doc=document.getElementById("doc");
   doc.innerHTML="";
@@ -423,11 +485,11 @@ function render(lang){
   doc.appendChild(section("thesis",t.thesisTitle,[
     el("p","lede",t.thesis),
     el("p","lede small",t.thesis2)
-  ]));
+  ],0));
 
   // education
   doc.appendChild(section("edu",t.eduTitle,
-    t.edu.map(d=>el("div","entry",entryRows(d)))
+    t.edu.map(d=>el("div","entry",entryRows(d))),1
   ));
 
   // selected work (with case studies)
@@ -440,7 +502,7 @@ function render(lang){
     if(d.figure) a.appendChild(aurocFigure(t));
     workNodes.push(a);
   });
-  doc.appendChild(section("work",t.workTitle,workNodes));
+  doc.appendChild(section("work",t.workTitle,workNodes,2));
 
   // more projects (compact)
   const moreWrap=el("div","compact");
@@ -449,7 +511,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     moreWrap.appendChild(e);
   });
-  doc.appendChild(section("more",t.moreTitle,[moreWrap]));
+  doc.appendChild(section("more",t.moreTitle,[moreWrap],3));
 
   // experience (compact)
   const expWrap=el("div","compact");
@@ -458,7 +520,7 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     expWrap.appendChild(e);
   });
-  doc.appendChild(section("exp",t.expTitle,[expWrap]));
+  doc.appendChild(section("exp",t.expTitle,[expWrap],4));
 
   // leadership
   const leadWrap=el("div","compact");
@@ -467,17 +529,17 @@ function render(lang){
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     leadWrap.appendChild(e);
   });
-  doc.appendChild(section("lead",t.leadTitle,[leadWrap]));
+  doc.appendChild(section("lead",t.leadTitle,[leadWrap],5));
 
   // skills
   const ul=el("ul","skills");
   t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
-  doc.appendChild(section("skills",t.skillTitle,[ul]));
+  doc.appendChild(section("skills",t.skillTitle,[ul],6));
 
   // recognition
   const rul=el("ul","rec");
   t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
-  doc.appendChild(section("rec",t.recTitle,[rul]));
+  doc.appendChild(section("rec",t.recTitle,[rul],7));
 
   observeSections();
 }
@@ -536,7 +598,28 @@ document.querySelectorAll(".lang button").forEach(btn=>{
   });
 });
 
+/* ---- theme toggle (BLK editor / datasheet) ----------------------------- */
+// localStorage guarded: persists on GitHub Pages, no-ops in sandboxed previews.
+function readTheme(){ try{ return localStorage.getItem("theme"); }catch(e){ return null; } }
+function saveTheme(v){ try{ localStorage.setItem("theme",v); }catch(e){} }
+function applyTheme(theme){
+  if(theme==="dark") document.documentElement.setAttribute("data-theme","dark");
+  else document.documentElement.removeAttribute("data-theme");
+  document.querySelectorAll(".theme button").forEach(b=>
+    b.setAttribute("aria-pressed", b.getAttribute("data-theme-set")===theme ? "true":"false"));
+}
+document.querySelectorAll(".theme button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const theme=btn.getAttribute("data-theme-set");
+    applyTheme(theme); saveTheme(theme);
+    // repaint the trace so the new accent picks up immediately
+    const p=document.getElementById("eeg"); if(p){ p.style.transition="none"; p.style.strokeDashoffset="0"; }
+  });
+});
+
 /* ---- init -------------------------------------------------------------- */
+const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme:dark)").matches;
+applyTheme(readTheme() || (prefersDark ? "dark" : "light"));
 render("en");
 drawTrace();
 </script>
