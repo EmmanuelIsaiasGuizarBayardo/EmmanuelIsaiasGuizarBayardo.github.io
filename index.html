@@ -252,6 +252,45 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .flabel{font-family:var(--mono);font-size:9px;fill:var(--faint)}
 .flabel.sig{fill:var(--signal)}
 
+/* section anchors offset for the sticky nav */
+.sec{scroll-margin-top:64px}
+
+/* sticky section nav ------------------------------------------------------- */
+.secnav{position:sticky;top:0;z-index:20;display:flex;gap:1.4rem;align-items:center;
+  padding:.7rem 0;margin-bottom:1.4rem;background:var(--paper);
+  border-bottom:1px solid var(--hair-2)}
+.secnav a{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .15s ease}
+.secnav a:hover{color:var(--ink)}
+@media(max-width:520px){.secnav{gap:1.05rem;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+
+/* project figures ---------------------------------------------------------- */
+.project{margin-bottom:2.4rem}
+.project:last-child{margin-bottom:0}
+.fig-thumb{position:relative;display:flex;align-items:center;justify-content:center;
+  aspect-ratio:16/9;background:var(--panel);border:1px solid var(--hair-2);
+  overflow:hidden;margin-bottom:.85rem}
+.fig-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.fig-thumb.noimg img{display:none}
+.fig-thumb .poster-ph{display:none}
+.fig-thumb.noimg .poster-ph{display:flex}
+.outcome{font-size:1.02rem;line-height:1.5;color:var(--ink);max-width:var(--measure);margin:.5rem 0 .2rem}
+.outcome.sm{font-size:.95rem;margin:.35rem 0 .15rem}
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
+@media(max-width:640px){.more-grid{grid-template-columns:1fr}}
+.project-sm{margin-bottom:0}
+.project-sm .fig-thumb{margin-bottom:.7rem}
+
+/* about -------------------------------------------------------------------- */
+.about-lead{font-size:1.05rem;line-height:1.6;color:var(--ink);max-width:var(--measure)}
+.about-cols{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem 2.2rem;margin-top:1.3rem}
+@media(max-width:640px){.about-cols{grid-template-columns:1fr}}
+.about-block h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 .5rem;font-weight:500}
+.about-list{list-style:none;padding:0;margin:0}
+.about-list li{padding:.12rem 0;color:var(--muted)}
+.about-langs{color:var(--muted);margin:0;line-height:1.6}
+
 a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px}
 
 @media(max-width:760px){
@@ -301,6 +340,13 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offse
       <a id="cvlink" href="./cv/Resume_Emmanuel_Guizar_Bayardo_EN.pdf" data-k="cvlink"></a>
     </nav>
   </header>
+
+  <nav class="secnav" aria-label="Sections">
+    <a href="#work" data-k="navWork"></a>
+    <a href="#signal" data-k="navDemos"></a>
+    <a href="#posters" data-k="navPosters"></a>
+    <a href="#about" data-k="navAbout"></a>
+  </nav>
 
   <main id="doc"></main>
 
@@ -374,33 +420,42 @@ const C = {
     ],
     workTitle:"Selected work",
     work:[
-      {org:"Parkinson's Disease Detection from EEG",loc:"Thesis, UNAM",role:"Subject-wise validation and transfer to Emotiv EPOC",dates:"Jun 2025 – Present",
-       desc:"Replicated the Aljalal et al. (2022) framework on the SanDiego dataset (n = 31) with subject-wise validation (GroupKFold) and 1,536 features per epoch from Wavelet Packet Decomposition. Contrasting segment-wise against subject-wise splits exposed the information leakage that inflates most published results; the pipeline retained 94–99% of performance on the 14 channels of the Emotiv EPOC, and the findings were presented as a poster at the 10th Neuroengineering Summer School (Camogli, Italy, 2026).",
+      {org:"Honest validation reshapes EEG Parkinson's detection",loc:"Thesis · UNAM",role:"Subject-wise validation and transfer to Emotiv EPOC",dates:"Jun 2025 – Present",
+       fig:"./figs/parkinson.png",
+       outcome:"Showed that the ~0.99 AUROC reported for EEG-based Parkinson's detection collapses to 0.63–0.72 under honest subject-wise validation; the leak-free pipeline still keeps 94–99% of its performance on the 14 consumer channels of the Emotiv EPOC.",
+       desc:"Replicated the Aljalal et al. (2022) framework on the SanDiego dataset (n = 31): 1,536 Wavelet Packet Decomposition features per epoch, GroupKFold subject-wise splits, and a segment-wise vs subject-wise contrast that isolates the leakage. Presented as a poster at the 10th Neuroengineering Summer School (Camogli, Italy, 2026).",
        marks:[["AUROC, segment-wise","0.99–1.00",false],["AUROC, subject-wise","0.63–0.72",true],["subjects","31",false],["features / epoch","1,536",false],["channels retained","14",false]],
-       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python",
-       figure:true},
-      {org:"Neural Population Dynamics and Decoding of NHP Electrophysiology",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Computational models on laboratory-provided primate recordings",dates:"Aug 2025 – Jun 2026",
-       desc:"Analyzed in-vivo primate electrophysiology in Python: 73 single-unit neurons and LFP across S1, S2, and premotor / prefrontal cortex (MPC, DPC). Combined single-neuron coding (mutual information, ROC/AUROC, choice probability) with population methods (PCA, demixed-PCA, targeted dimensionality reduction, neural manifolds) to decode stimulus, category, decision, and movement, alongside LFP connectivity (Granger, spike-field).",
+       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python"},
+      {org:"Decoding population dynamics in the primate cortex",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Computational models on laboratory primate recordings",dates:"Aug 2025 – Jun 2026",
+       fig:"./figs/nhp.png",
+       outcome:"Decoded stimulus, category, decision, and movement from 73 primate single units and LFP by pairing single-neuron coding with population geometry (demixed-PCA, neural manifolds).",
+       desc:"In-vivo electrophysiology across S1, S2, and premotor / prefrontal cortex (MPC, DPC), analyzed in Python. Single-neuron coding (mutual information, ROC/AUROC, choice probability) combined with PCA, demixed-PCA, targeted dimensionality reduction, and LFP connectivity (Granger, spike-field).",
        marks:[["single-unit neurons","73",false],["cortical areas","S1 · S2 · MPC · DPC",false],["decoded","stimulus · category · decision · movement",false]],
        tags:"NHP electrophysiology · demixed-PCA · neural manifolds · population decoding · LFP connectivity"},
-      {org:"WristQuest: Serious Game for Neurorehabilitation",loc:"LANR-IFC, UNAM",role:"Lead researcher · real-time sEMG for pediatric USCP",dates:"Feb 2026 – May 2026",
-       desc:"Designed, as lead researcher, a serious game driven by real-time sEMG (4 channels; 20–450 Hz band-pass, 60 Hz notch, RMS envelope, MVC normalization). Sized the pilot clinical trial (n = 52, Cohen's d = 0.8, 40 sessions), authored the 58-page protocol with 7 clinical annexes, and built a five-panel Python dashboard. Advisor: M.Sc. Yoás S. Ramírez Graullera.",
+      {org:"WristQuest: a real-time sEMG game for pediatric rehab",loc:"LANR-IFC, UNAM",role:"Lead researcher · real-time sEMG for pediatric USCP",dates:"Feb 2026 – May 2026",
+       fig:"./figs/wristquest.png",
+       outcome:"Led the design of a serious game driven by real-time sEMG for unilateral spastic cerebral palsy: a 4-channel pipeline, a powered pilot (n = 52, Cohen's d = 0.8), and a 58-page clinical protocol.",
+       desc:"Real-time chain: 20–450 Hz band-pass, 60 Hz notch, RMS envelope and MVC normalization feeding a five-panel Python dashboard. Sized the trial (40 sessions) and authored the protocol with 7 clinical annexes. Advisor: M.Sc. Yoás S. Ramírez Graullera.",
        marks:[["sEMG channels","4",false],["band-pass","20–450 Hz",false],["pilot n","52",false],["effect size","d = 0.8",false],["protocol","58 pp.",false]],
        tags:"sEMG · real-time DSP · RMS envelope · clinical protocol · Python"}
     ],
     moreTitle:"Also",
     more:[
-      {org:"ConnMorph: Morphometry and Functional Connectivity",loc:"Academic project, UNAM",role:"Structural VBM and resting-state networks with FSL and Nipype",dates:"Mar 2026 – Jun 2026",
-       desc:"VBM pipeline over 12 T1 images (BET, FAST, FLIRT, FNIRT to MNI152, Jacobian modulation, FWHM ≈ 8 mm; 18 ROIs) plus group-ICA resting-state networks for 7 subjects (MELODIC, 30 components), recovering 4 canonical networks via the Yeo atlas; reproducible end to end."},
-      {org:"NeuroDAC: Academic Demonstrator of Neuroengineering",loc:"DUNNE, UNAM",role:"Modular EEG and BCI interface · Python",dates:"May 2025 – Mar 2026",
-       desc:"Led a modular platform acquiring single-channel EEG (NeuroSky MindWave Mobile 2) with real-time visualization (Dash / Plotly) and two neurofeedback modules; presented to 600+ attendees across six academic and industry forums."}
+      {org:"ConnMorph: morphometry and functional connectivity",loc:"Academic project · UNAM",role:"Structural VBM and resting-state networks with FSL and Nipype",dates:"Mar 2026 – Jun 2026",
+       fig:"./figs/connmorph.png",
+       outcome:"Reproducible VBM and resting-state pipeline recovering 4 canonical networks.",
+       desc:"VBM over 12 T1 images (BET, FAST, FLIRT, FNIRT to MNI152, Jacobian modulation, FWHM ≈ 8 mm; 18 ROIs) plus group-ICA (MELODIC, 30 components) for 7 subjects, mapped to the Yeo atlas and reproducible end to end with Nipype."},
+      {org:"NeuroDAC: modular EEG / BCI demonstrator",loc:"DUNNE · UNAM",role:"Single-channel EEG and neurofeedback · Python",dates:"May 2025 – Mar 2026",
+       fig:"./figs/neurodac.png",
+       outcome:"Modular single-channel EEG / BCI demonstrator with live neurofeedback, shown to 600+ attendees.",
+       desc:"Acquires single-channel EEG (NeuroSky MindWave Mobile 2) with real-time Dash / Plotly visualization and two neurofeedback modules; presented across six academic and industry forums."}
     ],
     expTitle:"Experience",
     postersTitle:"Posters",
     posters:[
       {title:"Honest validation reshapes EEG-based Parkinson's disease detection",
        venue:"10th Neuroengineering Summer School · University of Genoa (DIBRIS), Camogli, Italy",
-       meta:"Poster · 09 June 2026",
+       meta:"Poster · June 2026",
        thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
       {title:"Diagnosis of brain disorders via electroencephalography and machine learning",
        venue:"IV Neurosymposium · ENES Juriquilla, UNAM",
@@ -429,6 +484,13 @@ const C = {
       ["Hardware / tools","Arduino, ESP32 / ESP32-S3, commercial EEG headsets (NeuroSky), sEMG, biomedical PCBs, 3D printing, OpenCV, Git / GitHub"],
       ["Spoken","Spanish (native), English (C1, Cambridge CAE), German (B2/C1, DSD II), Japanese (basic)"]
     ],
+    navWork:"Work", navDemos:"Demos", navPosters:"Posters", navAbout:"About",
+    aboutTitle:"About",
+    aboutLead:"Neuroscience undergraduate at UNAM and Computer Systems Engineering student at UVEG, working where neural signal processing meets machine learning. I care about making brain- and muscle-signal decoding honest, reproducible, and deployable on accessible hardware, from single neurons to consumer EEG. I lead DUNNE, UNAM's student division of neuroengineering.",
+    aboutInterestsLabel:"Research interests",
+    aboutInterests:["Brain-computer interfaces","EEG / sEMG signal processing","Neural decoding (single-neuron and population)","Reproducible neuroimaging","AI-assisted diagnostics"],
+    aboutLangsLabel:"Languages",
+    aboutLangs:"Spanish (native) · English (C1) · German (B2/C1) · Japanese (basic)",
     recTitle:"Recognition",
     rec:[
       ["2026","Full Board & Training Grant, University of Genoa / DIBRIS (Camogli)"],
@@ -479,33 +541,42 @@ const C = {
     ],
     workTitle:"Trabajo seleccionado",
     work:[
-      {org:"Detección de Parkinson a partir de EEG",loc:"Tesis, UNAM",role:"Validación subject-wise y transferencia a Emotiv EPOC",dates:"jun 2025 – Presente",
-       desc:"Repliqué el marco de Aljalal et al. (2022) sobre el conjunto SanDiego (n = 31) con validación subject-wise (GroupKFold) y 1,536 características por época vía Wavelet Packet Decomposition. Contrastar las particiones segment-wise contra subject-wise evidenció la fuga de información que infla la mayoría de los resultados publicados; el pipeline retuvo 94–99% del rendimiento en los 14 canales del Emotiv EPOC, y los hallazgos se presentaron como cartel en la 10th Neuroengineering Summer School (Camogli, Italia, 2026).",
+      {org:"La validación honesta redefine la detección de Parkinson por EEG",loc:"Tesis · UNAM",role:"Validación subject-wise y transferencia a Emotiv EPOC",dates:"jun 2025 – Presente",
+       fig:"./figs/parkinson.png",
+       outcome:"Demostré que el AUROC de ~0.99 reportado para la detección de Parkinson por EEG cae a 0.63–0.72 bajo validación honesta subject-wise; el pipeline sin fuga conserva 94–99% de su rendimiento en los 14 canales de consumo del Emotiv EPOC.",
+       desc:"Repliqué el marco de Aljalal et al. (2022) sobre el conjunto SanDiego (n = 31): 1,536 características de Wavelet Packet Decomposition por época, particiones subject-wise con GroupKFold y un contraste segment-wise vs subject-wise que aísla la fuga. Presentado como cartel en la 10th Neuroengineering Summer School (Camogli, Italia, 2026).",
        marks:[["AUROC, segment-wise","0.99–1.00",false],["AUROC, subject-wise","0.63–0.72",true],["sujetos","31",false],["características / época","1,536",false],["canales retenidos","14",false]],
-       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python",
-       figure:true},
-      {org:"Dinámica poblacional y decodificación de electrofisiología NHP",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Modelos computacionales sobre registros de primate provistos por el laboratorio",dates:"ago 2025 – jun 2026",
-       desc:"Analicé en Python electrofisiología in vivo de primate: 73 neuronas single-unit y LFP en cortezas S1, S2 y premotora / prefrontal (MPC, DPC). Combiné codificación de neurona única (información mutua, ROC/AUROC, choice probability) con métodos poblacionales (PCA, demixed-PCA, targeted dimensionality reduction, neural manifolds) para decodificar estímulo, categoría, decisión y movimiento, junto con conectividad de LFP (Granger, spike-field).",
+       tags:"EEG · Wavelet Packet Decomposition · GroupKFold · scikit-learn · MNE-Python"},
+      {org:"Decodificación de dinámica poblacional en la corteza de primate",loc:"IFC, UNAM · Prof. Rossi Pool",role:"Modelos computacionales sobre registros de primate del laboratorio",dates:"ago 2025 – jun 2026",
+       fig:"./figs/nhp.png",
+       outcome:"Decodifiqué estímulo, categoría, decisión y movimiento a partir de 73 neuronas single-unit de primate y LFP, uniendo la codificación de neurona única con la geometría poblacional (demixed-PCA, neural manifolds).",
+       desc:"Electrofisiología in vivo en cortezas S1, S2 y premotora / prefrontal (MPC, DPC), analizada en Python. Codificación de neurona única (información mutua, ROC/AUROC, choice probability) combinada con PCA, demixed-PCA, targeted dimensionality reduction y conectividad de LFP (Granger, spike-field).",
        marks:[["neuronas single-unit","73",false],["áreas corticales","S1 · S2 · MPC · DPC",false],["decodificado","estímulo · categoría · decisión · movimiento",false]],
        tags:"electrofisiología NHP · demixed-PCA · neural manifolds · decodificación poblacional · conectividad LFP"},
-      {org:"WristQuest: Serious game de neurorrehabilitación",loc:"LANR-IFC, UNAM",role:"Investigador principal · sEMG en tiempo real para PCEU pediátrica",dates:"feb 2026 – may 2026",
-       desc:"Diseñé, como investigador principal, un serious game controlado por sEMG en tiempo real (4 canales; pasa-banda 20–450 Hz, notch 60 Hz, envolvente RMS, normalización por MVC). Calculé el ensayo clínico piloto (n = 52, Cohen's d = 0.8, 40 sesiones), redacté el protocolo de 58 páginas con 7 anexos clínicos y construí un dashboard de cinco paneles en Python. Asesor: Mtro. Yoás S. Ramírez Graullera.",
+      {org:"WristQuest: serious game de sEMG en tiempo real para rehab pediátrica",loc:"LANR-IFC, UNAM",role:"Investigador principal · sEMG en tiempo real para PCEU pediátrica",dates:"feb 2026 – may 2026",
+       fig:"./figs/wristquest.png",
+       outcome:"Lideré el diseño de un serious game controlado por sEMG en tiempo real para parálisis cerebral espástica unilateral: un pipeline de 4 canales, un piloto con potencia (n = 52, Cohen's d = 0.8) y un protocolo clínico de 58 páginas.",
+       desc:"Cadena en tiempo real: pasa-banda 20–450 Hz, notch 60 Hz, envolvente RMS y normalización por MVC alimentando un dashboard de cinco paneles en Python. Calculé el ensayo (40 sesiones) y redacté el protocolo con 7 anexos clínicos. Asesor: Mtro. Yoás S. Ramírez Graullera.",
        marks:[["canales sEMG","4",false],["pasa-banda","20–450 Hz",false],["n piloto","52",false],["tamaño de efecto","d = 0.8",false],["protocolo","58 pp.",false]],
        tags:"sEMG · DSP en tiempo real · envolvente RMS · protocolo clínico · Python"}
     ],
     moreTitle:"Además",
     more:[
-      {org:"ConnMorph: Morfometría y conectividad funcional",loc:"Proyecto académico, UNAM",role:"VBM estructural y redes en reposo con FSL y Nipype",dates:"mar 2026 – jun 2026",
-       desc:"Pipeline VBM sobre 12 imágenes T1 (BET, FAST, FLIRT, FNIRT a MNI152, modulación jacobiana, FWHM ≈ 8 mm; 18 ROIs) más redes funcionales en reposo de 7 sujetos por ICA grupal (MELODIC, 30 componentes), recuperando 4 redes canónicas vía atlas de Yeo; reproducible de extremo a extremo."},
-      {org:"NeuroDAC: Demostrador Académico de Neuroingeniería",loc:"DUNNE, UNAM",role:"Interfaz modular de EEG y BCI · Python",dates:"may 2025 – mar 2026",
-       desc:"Dirigí una plataforma modular que adquiere EEG de un canal (NeuroSky MindWave Mobile 2) con visualización en tiempo real (Dash / Plotly) y dos módulos de neurofeedback; presentada ante más de 600 asistentes en seis foros académicos e industriales."}
+      {org:"ConnMorph: morfometría y conectividad funcional",loc:"Proyecto académico · UNAM",role:"VBM estructural y redes en reposo con FSL y Nipype",dates:"mar 2026 – jun 2026",
+       fig:"./figs/connmorph.png",
+       outcome:"Pipeline reproducible de VBM y estado de reposo que recupera 4 redes canónicas.",
+       desc:"VBM sobre 12 imágenes T1 (BET, FAST, FLIRT, FNIRT a MNI152, modulación jacobiana, FWHM ≈ 8 mm; 18 ROIs) más ICA grupal (MELODIC, 30 componentes) de 7 sujetos, mapeadas al atlas de Yeo y reproducible de extremo a extremo con Nipype."},
+      {org:"NeuroDAC: demostrador modular de EEG / BCI",loc:"DUNNE · UNAM",role:"EEG de un canal y neurofeedback · Python",dates:"may 2025 – mar 2026",
+       fig:"./figs/neurodac.png",
+       outcome:"Demostrador modular de EEG / BCI de un canal con neurofeedback en vivo, presentado ante más de 600 asistentes.",
+       desc:"Adquiere EEG de un canal (NeuroSky MindWave Mobile 2) con visualización en tiempo real (Dash / Plotly) y dos módulos de neurofeedback; presentado en seis foros académicos e industriales."}
     ],
     expTitle:"Experiencia",
     postersTitle:"Carteles",
     posters:[
       {title:"Honest validation reshapes EEG-based Parkinson's disease detection",
        venue:"10th Neuroengineering Summer School · Universidad de Génova (DIBRIS), Camogli, Italia",
-       meta:"Cartel · junio 2026",
+       meta:"Cartel · 09 junio 2026",
        thumb:"./posters/camogli.jpg", href:"./posters/camogli.pdf"},
       {title:"Diagnóstico de trastornos cerebrales mediante electroencefalografía y aprendizaje automático",
        venue:"IV Neurosimposio · ENES Juriquilla, UNAM",
@@ -534,6 +605,13 @@ const C = {
       ["Hardware / herramientas","Arduino, ESP32 / ESP32-S3, diademas EEG comerciales (NeuroSky), sEMG, PCBs biomédicas, impresión 3D, OpenCV, Git / GitHub"],
       ["Idiomas","español (nativo), inglés (C1, Cambridge CAE), alemán (B2/C1, DSD II), japonés (básico)"]
     ],
+    navWork:"Trabajo", navDemos:"Demos", navPosters:"Carteles", navAbout:"Perfil",
+    aboutTitle:"Perfil",
+    aboutLead:"Estudiante de Neurociencias en la UNAM y de Ingeniería en Sistemas Computacionales en la UVEG, trabajando donde el procesamiento de señales neurales se encuentra con el machine learning. Me interesa hacer que la decodificación de señales cerebrales y musculares sea honesta, reproducible y desplegable en hardware accesible, desde neuronas individuales hasta EEG de consumo. Dirijo DUNNE, la división estudiantil de neuroingeniería de la UNAM.",
+    aboutInterestsLabel:"Intereses de investigación",
+    aboutInterests:["Interfaces cerebro-computadora","Procesamiento de señales EEG / sEMG","Decodificación neural (neurona única y poblacional)","Neuroimagen reproducible","Diagnóstico asistido por IA"],
+    aboutLangsLabel:"Idiomas",
+    aboutLangs:"Español (nativo) · Inglés (C1) · Alemán (B2/C1) · Japonés (básico)",
     recTitle:"Reconocimientos",
     rec:[
       ["2026","Full Board & Training Grant, Universidad de Génova / DIBRIS (Camogli)"],
@@ -557,10 +635,20 @@ function entryRows(d){
 function marksHTML(marks){
   return `<ul class="marks">`+marks.map(m=>`<li>${m[0]} <span class="v${m[2]?" sig":""}">${m[1]}</span></li>`).join("")+`</ul>`;
 }
+function buildFig(src,alt){
+  const th=el("span","fig-thumb");
+  const img=document.createElement("img");
+  img.src=src; img.alt=alt; img.loading="lazy";
+  img.onerror=()=>th.classList.add("noimg");   // muestra marcador hasta que exista el archivo
+  const ph=el("span","poster-ph","FIGURE");
+  th.appendChild(img); th.appendChild(ph);
+  return th;
+}
 function section(labelKey,label,bodyNodes,idx){
   const i = idx==null ? 0 : idx;
   const s=el("section","sec");
   s.setAttribute("data-i", i);
+  if(labelKey) s.id=labelKey;
   const tick = `<span class="tick" style="--tick:var(--c${i%8})" aria-hidden="true"></span>`;
   s.appendChild(el("div","sec-label",`<span class="eyebrow">${tick}${label}</span>`));
   const b=el("div","sec-body");
@@ -842,21 +930,27 @@ function render(lang){
     t.edu.map(d=>el("div","entry",entryRows(d))),3
   ));
 
-  // selected work (with case studies)
+  // selected work (figure-led, inverted-pyramid case studies)
   const workNodes=[];
   t.work.forEach(d=>{
-    const a=el("article","work",entryRows(d));
-    a.appendChild(el("p","desc",d.desc));
+    const a=el("article","work project");
+    if(d.fig) a.appendChild(buildFig(d.fig,d.org));
+    a.appendChild(el("div",null,entryRows(d)));
+    if(d.outcome) a.appendChild(el("p","outcome",d.outcome));
     if(d.marks) a.appendChild(el("div",null,marksHTML(d.marks)));
+    if(d.desc) a.appendChild(el("p","desc",d.desc));
     a.appendChild(el("div","tags",d.tags));
     workNodes.push(a);
   });
   doc.appendChild(section("work",t.workTitle,workNodes,4));
 
-  // more projects (compact)
-  const moreWrap=el("div","compact");
+  // more projects (compact figure cards)
+  const moreWrap=el("div","compact more-grid");
   t.more.forEach(d=>{
-    const e=el("div","entry",entryRows(d));
+    const e=el("div","entry project-sm");
+    if(d.fig) e.appendChild(buildFig(d.fig,d.org));
+    e.appendChild(el("div",null,entryRows(d)));
+    if(d.outcome) e.appendChild(el("p","outcome sm",d.outcome));
     if(d.desc) e.appendChild(el("div","desc",d.desc));
     moreWrap.appendChild(e);
   });
@@ -888,10 +982,23 @@ function render(lang){
   t.skills.forEach(([cat,val])=>ul.appendChild(el("li",null,`<span class="cat">${cat}</span><span class="val">${val}</span>`)));
   doc.appendChild(section("skills",t.skillTitle,[ul],9));
 
+  // about (bio, interests, languages)
+  const about=el("div","about");
+  about.appendChild(el("p","about-lead",t.aboutLead));
+  const ai=el("div","about-cols");
+  const int=el("div","about-block",`<h4>${t.aboutInterestsLabel}</h4>`);
+  const iul=el("ul","about-list");
+  t.aboutInterests.forEach(x=>iul.appendChild(el("li",null,x)));
+  int.appendChild(iul);
+  const lng=el("div","about-block",`<h4>${t.aboutLangsLabel}</h4><p class="about-langs">${t.aboutLangs}</p>`);
+  ai.appendChild(int); ai.appendChild(lng);
+  about.appendChild(ai);
+  doc.appendChild(section("about",t.aboutTitle,[about],10));
+
   // recognition
   const rul=el("ul","rec");
   t.rec.forEach(([yr,txt])=>rul.appendChild(el("li",null,`<span class="yr">${yr}</span><span>${txt}</span>`)));
-  doc.appendChild(section("rec",t.recTitle,[rul],10));
+  doc.appendChild(section("rec",t.recTitle,[rul],11));
 
   observeSections();
 }
