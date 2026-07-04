@@ -313,7 +313,6 @@ p{margin:0 0 1rem;max-width:var(--measure)}
 .outcome.sm{font-size:.95rem;margin:.35rem 0 .15rem}
 .more-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
 @media(max-width:640px){.more-grid{grid-template-columns:1fr}}
-.more-grid .wide{grid-column:1 / -1}
 .project-sm{margin-bottom:0}
 .project-sm .collage{margin-bottom:.7rem}
 
@@ -684,19 +683,17 @@ function entryRows(d){
 function marksHTML(marks){
   return `<ul class="marks">`+marks.map(m=>`<li>${m[0]} <span class="v${m[2]?" sig":""}">${m[1]}</span></li>`).join("")+`</ul>`;
 }
-const _collages=[];
+const _collageRO = new ResizeObserver(entries=>{ for(const e of entries) layoutCollage(e.target); });
 function buildGallery(figs,alt){
   const arr=(Array.isArray(figs)?figs:[figs]).filter(Boolean);
   const frame=el("div","collage");
-  frame._arr=arr; frame._alt=alt; frame._heroAR=1.6; frame._kept=arr.slice();
+  frame._arr=arr; frame._alt=alt; frame._kept=arr.slice();
   arr.forEach((src,i)=>{
     const tile=el("button","ctile"); tile.type="button";
     tile.setAttribute("aria-label",`${alt}: figure ${i+1}`);
     const img=document.createElement("img");
     img.alt=arr.length>1?`${alt} (${i+1})`:alt; img.loading="lazy";
-    // hero aspect drives orientation; any load/err re-runs the layout
-    img.onload=()=>{ if(i===0) frame._heroAR=(img.naturalWidth/img.naturalHeight)||1.6; layoutCollage(frame); };
-    img.onerror=()=>{ tile.classList.add("noimg"); layoutCollage(frame); };
+    img.onerror=()=>{ tile.classList.add("noimg"); };       // marcador FIGURE hasta que exista el archivo
     img.src=src;
     const ph=el("span","poster-ph","FIGURE");
     tile.appendChild(img); tile.appendChild(ph);
@@ -706,31 +703,25 @@ function buildGallery(figs,alt){
     });
     frame.appendChild(tile);
   });
-  _collages.push(frame);
-  layoutCollage(frame);                                     // layout inicial
+  layoutCollage(frame);                                     // layout inicial (el RO lo refina con el ancho real)
+  _collageRO.observe(frame);
   return frame;
 }
-// mide el marco y el hero, elige orientacion + cuantas secundarias caben, descarta el resto (desde la ultima)
+// mide el ancho real de la tarjeta, decide cuantas caben, elige plantilla por conteo y descarta desde la ultima
 function layoutCollage(frame){
   const arr=frame._arr;
   const tiles=[...frame.children].filter(c=>c.classList.contains("ctile"));
   const w=frame.clientWidth||600;
-  const h=parseFloat(getComputedStyle(frame).height)||300;
-  const landscape = frame._heroAR >= 1.1;                   // cuadrado cuenta como horizontal
-  // secundarias que caben sin volverse diminutas (>=~210px de ancho o >=~120px de alto)
-  const maxSec = arr.length<=1 ? 0
-    : Math.max(1, Math.min(4, Math.round(landscape ? w/210 : h/120)));
-  const keptN = Math.min(arr.length, 1+maxSec);
-  frame.classList.toggle("lay-L", landscape);
-  frame.classList.toggle("lay-P", !landscape);
+  const maxKeep = w>=560 ? 5 : w>=400 ? 4 : 3;              // tarjetas angostas (Además) muestran menos
+  const keptN = Math.min(arr.length, maxKeep);
+  const leftHero = keptN<=3;                                // 2-3 -> hero a la izquierda ; 4-5 -> hero arriba
+  frame.classList.toggle("lay-P", leftHero);
+  frame.classList.toggle("lay-L", !leftHero);
   frame.setAttribute("data-n", String(keptN));
   const kept=[];
   tiles.forEach((t,i)=>{ const disc=i>=keptN; t.classList.toggle("discarded",disc); if(!disc) kept.push(arr[i]); });
   frame._kept=kept;                                         // el lightbox solo ve estas
 }
-let _collageRT;
-window.addEventListener("resize",()=>{ clearTimeout(_collageRT);
-  _collageRT=setTimeout(()=>_collages.forEach(layoutCollage),150); });
 
 /* lightbox: click a tile to view full size, arrows / esc to navigate */
 let _lb=null;
@@ -1009,6 +1000,7 @@ function buildFilter(t){
 /* ---- build the document ------------------------------------------------ */
 function render(lang){
   const t=C[lang];
+  _collageRO.disconnect();   // limpia observaciones del render anterior (idioma)
   // figure strings live alongside content
   t.figHead = lang==="es" ? "AUROC · Parkinson vs. control" : "AUROC · Parkinson vs. control";
   t.figSeg  = "segment-wise";
@@ -1070,7 +1062,6 @@ function render(lang){
   t.more.forEach(d=>{
     const e=el("div","entry project-sm");
     const figs=d.figs||(d.fig?[d.fig]:[]);
-    if(figs.length>=3) e.classList.add("wide");   // ancho completo si trae collage
     if(figs.length) e.appendChild(buildGallery(figs,d.org));
     e.appendChild(el("div",null,entryRows(d)));
     if(d.outcome) e.appendChild(el("p","outcome sm",d.outcome));
